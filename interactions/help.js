@@ -7,7 +7,7 @@ module.exports = {
       const subscription = new MessageEmbed()
         .setTitle("1) Subscription")
         .setColor("#454be9")
-        .setDescription("To use the BoBot , you would first need a valid subscription . To learn more about subscriptions use the `/subscribe` slash command.");
+        .setDescription("To use the BoBot , you would first need a valid subscription . To learn more about subscriptions use the `/subscribe` slash command .");
       const config = new MessageEmbed()
         .setTitle("2) Configuring Wallets")
         .setColor("#454be9")
