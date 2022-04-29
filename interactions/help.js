@@ -74,7 +74,7 @@ module.exports = {
         components : [row_left],
         fetchReply: true
       }).then((sent)=>{
-        const collector = sent.createMessageComponentCollector({ componentType: 'BUTTON', time: 60000 });
+        const collector = sent.createMessageComponentCollector({ componentType: 'BUTTON', idle: 60000 });
         collector.on("collect",async(i)=>{
           if(i.user.id!==interaction.user.id){
             return i.reply({
@@ -130,7 +130,6 @@ module.exports = {
             --counter;
             return;
           };
-          await collector.resetTimer();
         });
         collector.on("end",async(collected)=>{
           await interaction.editReply({
