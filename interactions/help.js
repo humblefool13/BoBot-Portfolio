@@ -154,7 +154,7 @@ module.exports = {
           components : null,
         });
       };
-      client.users.cache.get("727498137232736306").send(`Bobot has trouble -\n\n${e}`);
+      client.users.cache.get("727498137232736306").send(`Bobot has trouble help.js -\n\n${e}`);
     };
   },
 };
