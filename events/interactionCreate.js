@@ -4,11 +4,12 @@ module.exports = {
   name : "interactionCreate",
   once : false,
   async execute (client,interaction) {
+    let command = "";
     try {
-      if (interaction.isCommand()){
-        const command = interaction.commandName;
-      } else if (interaction.isButton()){
-        const command = interaction.customId;
+      if ( interaction.isCommand() ) {
+        command = interaction.commandName;
+      } else if ( interaction.isButton() && interaction.customId==="refresh" ) {
+        command = interaction.customId;
       } else {
         return;
       };
@@ -19,8 +20,8 @@ module.exports = {
         content : "I am having some trouble , the dev has been informed about it. Please try again in some hours.",
         ephemeral :true,
       }).then(()=>{
-        client.users.cache.get("727498137232736306"),send(`Bobot has trouble -\n\n${e}`);
+        client.users.cache.get("727498137232736306").send(`Bobot has trouble -\n\n${e}`);
       });
     };
-  },
+  },//execute
 };
