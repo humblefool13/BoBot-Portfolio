@@ -35,7 +35,7 @@ function embedGenerator (title,url,description){
   return returnEmbed;
 };
 function descriptionGenerator(array){
-  let floorString = ["Quantity - Name - Floor [ETH] - Floor [USD] - TOTAL"];
+  let floorString = "Quantity - Name - Floor [ETH] - Floor [USD] - TOTAL";
   array.forEach((collection)=>{
     floorString = floorString + `\n`+ collection.join(" - ");
   });
@@ -67,7 +67,7 @@ function liquidCalculator(arr){
   arr.forEach((ar)=>{
     liquidTotal = liquidTotal + ar[1];
   });
-  return liquidTotal.toFixed(4);
+  return liquidTotal;
 };
 
 
@@ -128,6 +128,7 @@ module.exports = {
           do{
             collections_owned = await getUrlOSAPI(collections_url);
           }while(!collections_owned)
+          console.log(collections_owned);
           collections_owned.forEach(async(collection)=>{
             const find = collections.find((e)=>{e[0]===collection.name});
             if(!find){
@@ -149,119 +150,116 @@ module.exports = {
           //owned name floor floor_usd total_worth
           collections[collections.indexOf(collection)] = [collection[2],collection[0],floor.toFixed(4),(floor*ether_usd_price).toFixed(2),(floor*collection[2]).toFixed(4)];
           nft_worth = nft_worth+(floor*collection[2]).toFixed(4);
+          if(collections.indexOf(collection)!==collections.length-1) return;
+          let embeds = [];
+          let collectionsPerArray = [];
+          const numberOfEmbeds = Math.ceil(collections.length/60);
+          switch (numberOfEmbeds) {
+            case 1 :
+              collectionsPerArray = collections;
+              const description = descriptionGenerator(collectionsPerArray);
+              const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
+              embeds.push(embed);
+              break;
+            case 2 :
+              collectionsPerArray = arraySplitter(collections,2);
+              collectionsPerArray.forEach((collect)=>{
+                const description = descriptionGenerator(collect);
+                const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
+                embeds.push(embed);
+              });
+              break;
+            case 3 :
+              collectionsPerArray = arraySplitter(collections,3);
+              collectionsPerArray.forEach((collect)=>{
+                const description = descriptionGenerator(collect);
+                const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
+                embeds.push(embed);
+              });
+              break;
+            case 4 :
+              collectionsPerArray = arraySplitter(collections,4);
+              collectionsPerArray.forEach((collect)=>{
+                const description = descriptionGenerator(collect);
+                const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
+                embeds.push(embed);
+              });
+              break;
+            case 5 :
+              collectionsPerArray = arraySplitter(collections,5);
+              collectionsPerArray.forEach((collect)=>{
+                const description = descriptionGenerator(collect);
+                const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
+                embeds.push(embed);
+              });
+              break;
+            case 6 :
+              collectionsPerArray = arraySplitter(collections,6);
+              collectionsPerArray.forEach((collect)=>{
+                const description = descriptionGenerator(collect);
+                const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
+                embeds.push(embed);
+              });
+              break;
+            case 7 :
+              collectionsPerArray = arraySplitter(collections,7);
+              collectionsPerArray.forEach((collect)=>{
+                const description = descriptionGenerator(collect);
+                const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
+                embeds.push(embed);
+              });
+              break;
+            case 8 :
+              collectionsPerArray = arraySplitter(collections,8);
+              collectionsPerArray.forEach((collect)=>{
+                const description = descriptionGenerator(collect);
+                const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
+                embeds.push(embed);
+              });
+              break;
+            case 9 :
+              collectionsPerArray = arraySplitter(collections,9);
+              collectionsPerArray.forEach((collect)=>{
+                const description = descriptionGenerator(collect);
+                const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
+                embeds.push(embed);
+              });
+              break;
+            case 10 :
+            default :
+              if(numberOfEmbeds>10) collections = collections.slice(0,599);
+              collectionsPerArray = arraySplitter(collections,10);
+              collectionsPerArray.forEach((collect)=>{
+                const description = descriptionGenerator(collect);
+                const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
+                embeds.push(embed);
+              });
+              break;
+          };
+          const floorChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[0]).catch((e)=>{});
+          const floorMessage = await floorChannel.messages.fetch(messages[0]).catch((e)=>{});
+          await floorMessage.edit({
+            embeds : [embeds],
+            content : `Last Updated : <t:${parseInt(Date.now()/1000)}:R>`,
+            components : [row],
+          });
+          const eth_nft = nft_worth;
+          
+          // NFT ENDS
+          const totalEth = liquid_eth + eth_nft;
+          const totalEthUSD = (totalEth*ether_usd_price).toFixed(2);
+          // POTFOLIO STARTS
+          const portFolioDescription = `:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth*ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft*ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
+          const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`,null,portFolioDescription);
+          const portfolioChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[2]).catch((e)=>{});
+          const portfolioMessage = await portfolioChannel.messages.fetch(messages[2]).catch((e)=>{});
+          await portfolioMessage.edit({
+            embeds : [portFolioEmbed],
+            content : `Last Updated : <t:${parseInt(Date.now()/1000)}:R>`,
+            components : [row],
+          });
+          // PORTFOLIO ENDS
         });
-        let embeds = [];
-        let collectionsPerArray = [];
-        const numberOfEmbeds = Math.ceil(collections.length/60);
-        switch (numberOfEmbeds) {
-          case 1 :
-            collectionsPerArray = collections;
-            const description = descriptionGenerator(collectionsPerArray);
-            const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
-            embeds.push(embed);
-            break;
-          case 2 :
-            collectionsPerArray = arraySplitter(collections,2);
-            collectionsPerArray.forEach((collect)=>{
-              const description = descriptionGenerator(collect);
-              const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
-              embeds.push(embed);
-            });
-            break;
-          case 3 :
-            collectionsPerArray = arraySplitter(collections,3);
-            collectionsPerArray.forEach((collect)=>{
-              const description = descriptionGenerator(collect);
-              const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
-              embeds.push(embed);
-            });
-            break;
-          case 4 : 
-            collectionsPerArray = arraySplitter(collections,4);
-            collectionsPerArray.forEach((collect)=>{
-              const description = descriptionGenerator(collect);
-              const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
-              embeds.push(embed);
-            });
-            break;
-          case 5 : 
-            collectionsPerArray = arraySplitter(collections,5);
-            collectionsPerArray.forEach((collect)=>{
-              const description = descriptionGenerator(collect);
-              const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
-              embeds.push(embed);
-            });
-            break;
-          case 6 :
-            collectionsPerArray = arraySplitter(collections,6);
-            collectionsPerArray.forEach((collect)=>{
-              const description = descriptionGenerator(collect);
-              const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
-              embeds.push(embed);
-            });
-            break;
-          case 7 :
-            collectionsPerArray = arraySplitter(collections,7);
-            collectionsPerArray.forEach((collect)=>{
-              const description = descriptionGenerator(collect);
-              const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
-              embeds.push(embed);
-            });
-            break;
-          case 8 :
-            collectionsPerArray = arraySplitter(collections,8);
-            collectionsPerArray.forEach((collect)=>{
-              const description = descriptionGenerator(collect);
-              const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
-              embeds.push(embed);
-            });
-            break;
-          case 9 :
-            collectionsPerArray = arraySplitter(collections,9);
-            collectionsPerArray.forEach((collect)=>{
-              const description = descriptionGenerator(collect);
-              const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
-              embeds.push(embed);
-            });
-            break;
-          case 10 :
-          default :
-            if(numberOfEmbeds>10) collections = collections.slice(0,599);
-            collectionsPerArray = arraySplitter(collections,10);
-            collectionsPerArray.forEach((collect)=>{
-              const description = descriptionGenerator(collect);
-              const embed = embedGenerator("Floor Prices of Collections Owned",null,description);
-              embeds.push(embed);
-            });
-            break;
-        };
-        const floorChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[0]).catch((e)=>{});
-        const floorMessage = await floorChannel.messages.fetch(messages[0]).catch((e)=>{});
-        floorMessage.edit({
-          embeds : [embeds],
-          content : `Last Updated : <t:${parseInt(Date.now()/1000)}:R>`,
-          components : [row],
-        });
-        const eth_nft = nft_worth;
-
-        // NFT ENDS
-        const totalEth = liquid_eth + eth_nft;
-        const totalEthUSD = (totalEth*ether_usd_price).toFixed(2);
-        // POTFOLIO STARTS
-        const portFolioDescription = `:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth*ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft*ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
-        const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`,null,portFolioDescription);
-        const portfolioChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[2]).catch((e)=>{});
-        const portfolioMessage = await portfolioChannel.messages.fetch(messages[2]).catch((e)=>{});
-        portfolioMessage.edit({
-          embeds : [portFolioEmbed],
-          content : `Last Updated : <t:${parseInt(Date.now()/1000)}:R>`,
-          components : [row],
-        });
-        // PORTFOLIO ENDS
-      });
-      await interaction.editReply({
-        content : "Successfully Updated ! :white_check_mark:",
-        ephemeral : true,
       });
     }catch(e){
       console.log(e);

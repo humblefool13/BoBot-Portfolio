@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const format = {
-  discord_id : Number,
+  discord_id : String,
   nft_wallets : Array,
   wallets : Array,
   channel_ids : Array,
