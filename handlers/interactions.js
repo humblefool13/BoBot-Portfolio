@@ -15,5 +15,5 @@ module.exports = (client) => {
       table.addRow(interaction, `❗ error -> missing a help.name, or help.name is not a string.`)
     };
   };
-  //console.log(table.toString());
+  console.log(table.toString());
 }

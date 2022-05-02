@@ -134,7 +134,7 @@ module.exports = {
         collector.on("end",async(collected)=>{
           await interaction.editReply({
             components : [dead_buttons],
-          });
+          }).catch((e)=>{});
           return;
         });
       });

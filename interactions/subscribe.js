@@ -2,21 +2,24 @@ const { MessageEmbed , MessageActionRow , MessageButton } = require("discord.js"
 
 module.exports = {
   name : "subscribe",
-  async interact (client,interaction){
+  async interact (client,interaction){/*
     try{
       const step1 = new MessageEmbed()
       .setTitle("Choose a Plan")
       .setColor("#454be9")
-      .setDescription("I hope you liked the product and that might be the reason you are here :slight_smile:\n\nTo start using this product , please choose 1 of the the following available plans :\n\`\`\`0,1 ETH => 1 Month\`\`\`\`\`\`0,25 ETH => 3 Months\`\`\`\`\`\`0,5 ETH => 6 Months\`\`\`\`\`\`1 ETH => 12 Months\`\`\`\n\n:green_circle::red_circle::red_circle::red_circle:");
+      .setDescription("I hope you liked the product and that might be the reason you are here :slight_smile:\nTo start using this product , please choose 1 of the following available plans :\n\n\`\`\`0,05  ETH => 4  Weeks\n0,125 ETH => 12 Weeks\n0,25  ETH => 24 Weeks\n0,5   ETH => 48 Weeks\`\`\`\n:green_circle::red_circle::red_circle::red_circle:");
       const step2 = new MessageEmbed()
       .setTitle("Payment")
       .setColor("#454be9")
-      .setDescription("Since you must have chosen a plan , please transfer the required amount of ETH to\n \`\`\`0x6FFDd91000823E8989572c6ab95D0875E592659b\`\`\`\nYou may use the QR code below as well !!! \n\n:green_circle::green_circle::red_circle::red_circle:")
+      .setDescription("Since you must have chosen a plan , please transfer the required amount of ETH to the wallet sent below.\n\nYou may use the QR code below as well !!! \n\n:green_circle::green_circle::red_circle::red_circle:")
       .setImage("https://media.discordapp.net/attachments/797163839765741568/969700174798663710/IMG_20220430_021135.jpg");
+      const step2a = new MessageEmbed()
+      .setColor("#454be9")
+      .setDescription("0x6FFDd91000823E8989572c6ab95D0875E592659b");
       const step3 = new MessageEmbed()
       .setTitle("Generating Proof of Wallet Ownership")
       .setColor("#454be9")
-      .setDescription("We need to verify the wallet sending the subscription fee belongs to you . Please head over to https://etherscan.io/verifiedSignatures and sign a message ( hit the \"Sign Message\" button ) stating your discord account full username ( eg : \"0xBo#9999\")  with wallet you did the transaction with . Click on the \"Publish\" button and this should redirect you to your signature message page \( [this for me](https://etherscan.io/verifySig/6483) \) just copy this link you would need it later !!! If by chance you lose the link , do not worry you can always find it [in here](https://etherscan.io/verifiedSignatures) \n**NOTE : This will not trigger a blockchain transaction and will not cost any gas fee . It is completely safe , however its recommended to \"Disconnect\" the site from your wallet after use.** \n\n:green_circle::green_circle::green_circle::red_circle:");
+      .setDescription("We need to verify the wallet sending the subscription fee belongs to you . Please head over to https://etherscan.io/verifiedSignatures and sign a message ( hit the \"Sign Message\" button ) stating your discord account full username ( eg : \"0xBo#9999\")  with wallet you did the transaction with . Click on the \"Publish\" button and this should redirect you to your signature message page \( [this for me](https://etherscan.io/verifySig/6483) \) just copy this link you would need it later !!! If by chance you lose the link , do not worry you can always find it [in here](https://etherscan.io/verifiedSignatures) . \n\n**NOTE : This will not trigger a blockchain transaction and will not cost any gas fee . It is completely safe , however its recommended to \"Disconnect\" the site from your wallet after use.** \n\n:green_circle::green_circle::green_circle::red_circle:");
       const step4 = new MessageEmbed()
       .setTitle("Redeem the Purchase")
       .setColor("#454be9")
@@ -86,7 +89,7 @@ module.exports = {
           await i.deferUpdate();
           if(counter===0){
             await interaction.editReply({
-              embeds : [step2],
+              embeds : [step2,step2a],
               components : [row_middle],
             });
             ++counter;
@@ -110,7 +113,7 @@ module.exports = {
           }else if(counter===2){
             if(i.customId==="left"){
               await interaction.editReply({
-                embeds : [step2],
+                embeds : [step2,step2a],
                 components : [row_middle],
               });
               --counter;
@@ -135,7 +138,7 @@ module.exports = {
         collector.on("end",async(collected)=>{
           await interaction.editReply({
             components : [dead_buttons],
-          });
+          }).catch((e)=>{});
           return;
         });
       });
@@ -157,5 +160,12 @@ module.exports = {
       };
       client.users.cache.get("727498137232736306").send(`Bobot has trouble subscribe.js -\n\n${e}`);
     };
+  */
+    const embed = new MessageEmbed()
+    .setDescription("Join our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !') and make a ticket to purchase a subscription !!!")
+    .setColor("#454be9");
+    interaction.reply({
+      embeds : [embed],
+    });
   }
 }

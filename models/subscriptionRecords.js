@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const format = {
   discord_id : Number,
   start_timestamp : Number,
-  months : Number,
+  weeks : Number,
   end_timestamp : Number,
 };
 
