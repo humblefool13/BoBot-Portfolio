@@ -254,7 +254,7 @@ module.exports = {
                         });
                         const eth_nft = nft_worth.toFixed(4);
                         // NFT ENDS
-                        const totalEth = Number(liquid_eth) + Number(eth_nft);
+                        const totalEth = Number(Number(liquid_eth) + Number(eth_nft)).toFixed(4);
                         const totalEthUSD = (totalEth * ether_usd_price).toFixed(2);
                         // POTFOLIO STARTS
                         const portFolioDescription = `:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth*ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft*ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
