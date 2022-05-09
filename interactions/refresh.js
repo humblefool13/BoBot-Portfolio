@@ -231,7 +231,6 @@ async function concatenateArrays(arr1, arr2) {
     if (!find) {
       array.push(e);
     } else {
-      console.log(find);
       const number_1 = e[2];
       const number_2 = find[2];
       const total = number_1 + number_2;
