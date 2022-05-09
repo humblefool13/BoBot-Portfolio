@@ -224,21 +224,22 @@ async function getCollections(wallet) {
   });
   return collectionsxd;
 };
-function concatenateArrays(arr1, arr2) {
+async function concatenateArrays(arr1, arr2) {
   let array = [];
-  arr1.forEach((e) => {
-    const find = arr2.find((el) => { el[0] === e[0] });
+  arr1.forEach(async (e) => {
+    const find = await arr2.find(el => el[0] === e[0]);
     if (!find) {
       array.push(e);
     } else {
+      console.log(find);
       const number_1 = e[2];
       const number_2 = find[2];
       const total = number_1 + number_2;
       array.push([e[0], e[1], total]);
     };
   });
-  arr2.forEach((e) => {
-    const find = array.find((el) => el[0] === e[0]);
+  arr2.forEach(async (e) => {
+    const find = await array.find(el => el[0] === e[0]);
     if (!find) {
       array.push(e);
     };
@@ -295,7 +296,7 @@ module.exports = {
         if (nft_wallets.length === 2) {
           collections_2 = await getCollections(nft_wallets[1]);
         };
-        collections = concatenateArrays(collections_1, collections_2);
+        collections = await concatenateArrays(collections_1, collections_2);
         collections.forEach(async (collection) => {
           let stats = "";
           const statsUrl = `https://api.opensea.io/api/v1/collection/${collection[1]}/stats`;
