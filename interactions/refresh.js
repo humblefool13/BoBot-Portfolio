@@ -79,13 +79,11 @@ async function ether_usd() {
   const eth_usd = (Number(etherresponse.result.ethusd)).toFixed(2);
   return eth_usd;
 };
-
 function embedGenerator(title, url, description) {
   const returnEmbed = new MessageEmbed().setColor("#454be9").setTitle(title).setDescription(description);
   if (url) returnEmbed.setURL(url);
   return returnEmbed;
 };
-
 function descriptionGenerator(array) {
   let floorString = "\`\`\`Quantity - Name - Floor [ETH] - Floor [USD] - TOTAL\n";
   array.forEach((collection) => {
@@ -94,7 +92,6 @@ function descriptionGenerator(array) {
   floorString = floorString + "\`\`\`";
   return floorString;
 };
-
 function arraySplitter(array, number) {
   let resultArray = [];
   for (i = 0; i < number; i++) {
@@ -102,15 +99,13 @@ function arraySplitter(array, number) {
   };
   return resultArray;
 };
-
 function walletDescriptionGenerator(walletsData) {
   let descriptionString = "";
   walletsData.forEach((walletData) => {
-    descriptionString = descriptionString + `:white_square_button: **WALLET ADDRESS** -\n **[${walletData[0]}](https://etherscan.io/address/${walletData[0]} "Click to view the wallet on etherscan")**\n:white_small_square: ETH HELD : Ξ ${walletData[1]}\n:white_small_square: ETH HELD [USD WORTH] : $ ${walletData[2]}\n\n`;
+    descriptionString = descriptionString + `:white_medium_small_square: **WALLET ADDRESS** -\n **[${walletData[0]}](https://etherscan.io/address/${walletData[0]} "Click to view the wallet on etherscan")**\n:white_small_square: ETH HELD : Ξ ${walletData[1]}\n:white_small_square: ETH HELD [USD WORTH] : $ ${walletData[2]}\n\n`;
   });
   return descriptionString;
 };
-
 function liquidCalculator(arr) {
   let liquidTotal = 0;
   arr.forEach((ar) => {
@@ -211,17 +206,52 @@ async function switchIt(n, newCollections) {
   };
   return embeds;
 };
+async function getCollections(wallet) {
+  let collectionsxd = [];
+  const collections_url = `https://api.opensea.io/api/v1/collections?asset_owner=${wallet}&limit=300`;
+  const collections_owned = await getUrlOSAPI(collections_url);
+  collections_owned.forEach((collection) => {
+    const find = collectionsxd.find((e) => {
+      e[0] === collection.name
+    });
+    if (!find) {
+      collectionsxd.push([collection.name, collection.slug, Number(collection.owned_asset_count)]);
+    } else {
+      const ownedOld1 = collectionsxd[collectionsxd.indexOf(find)];
+      const ownedOld2 = ownedOld1[2];
+      collectionsxd[collectionsxd.indexOf(find)] = [collection.name, collection.slug, ownedOld2 + Number(collection.owned_asset_count)];
+    };
+  });
+  return collectionsxd;
+};
+function concatenateArrays(arr1, arr2) {
+  let array = [];
+  arr1.forEach((e) => {
+    const find = arr2.find((el) => { el[0] === e[0] });
+    if (!find) {
+      array.push(e);
+    } else {
+      const number_1 = e[2];
+      const number_2 = find[2];
+      const total = number_1 + number_2;
+      array.push([e[0], e[1], total]);
+    };
+  });
+  arr2.forEach((e) => {
+    const find = array.find((el) => el[0] === e[0]);
+    if (!find) {
+      array.push(e);
+    };
+  });
+  return array;
+};
 
 module.exports = {
   name: "refresh",
   async interact(client, interaction) {
     let nft_worth = 0;
     await interaction.deferUpdate();
-    const sentxd = await interaction.channel.send({
-      content: "<a:CH_IconLoading:973124874124005396>"
-    });
     try {
-      // WALLET CHANNEL START
       let collections = [];
       let newCollections = [];
       let etherResponse = "";
@@ -229,6 +259,9 @@ module.exports = {
       configs.forEach(async (configuration) => {
         const channels = configuration.channel_ids;
         if (!channels.includes(interaction.channel.id)) return;
+        const sentxd = await interaction.channel.send({
+          content: "<a:CH_IconLoading:973124874124005396>\nThis message will delete automatically after all - floors , wallets , portfolio channels are updated."
+        });
         const userid = configuration.discord_id;
         const user = await client.users.fetch(userid);
         const usertag = user.tag;
@@ -257,135 +290,97 @@ module.exports = {
           components: [row],
         });
         const liquid_eth = liquidCalculator(balanceOverall);
-        // WALLET CHANNEL END
-        // NFT START
-        let collections_owned = "";
-        nft_wallets.forEach(async (wallet) => {
-          collections_owned = "";
-          const collections_url = `https://api.opensea.io/api/v1/collections?asset_owner=${wallet}&limit=300`;
+        const collections_1 = await getCollections(nft_wallets[0]);
+        let collections_2 = [];
+        if (nft_wallets.length === 2) {
+          collections_2 = await getCollections(nft_wallets[1]);
+        };
+        collections = concatenateArrays(collections_1, collections_2);
+        collections.forEach(async (collection) => {
+          let stats = "";
+          const statsUrl = `https://api.opensea.io/api/v1/collection/${collection[1]}/stats`;
           do {
-            collections_owned = await getUrlOSAPI(collections_url);
-          } while (!collections_owned)
-          collections_owned.forEach((collection) => {
-            const find = collections.find((e) => {
-              e[0] === collection.name
-            });
-            if (!find) {
-              collections.push([collection.name, collection.slug, Number(collection.owned_asset_count)]);
-            } else {
-              const ownedOld1 = collections[collections.indexOf(find)];
-              const ownedOld2 = ownedOld1[2];
-              collections[collections.indexOf(find)] = [collection.name, collection.slug, ownedOld2 + Number(collection.owned_asset_count)];
-            };
+            stats = await getUrlOSAPI(statsUrl);
+          } while (!stats || !stats.stats)
+          const floor = Number(stats.stats.floor_price);
+          newCollections.push([collection[2], collection[0], floor.toFixed(4), (floor * ether_usd_price).toFixed(2), (floor * collection[2]).toFixed(4)]);
+          nft_worth = nft_worth + Number((floor * collection[2]).toFixed(4));
+          if (collections.length !== newCollections.length) return;
+          let embeds = [];
+          let collectionsPerArray = [];
+          const numberOfEmbeds = Math.ceil(newCollections.length / 30);
+          const floorEmbeds = await switchIt(numberOfEmbeds, newCollections);
+          const floorChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[0]).catch((e) => {
+            interaction.channel.send("The Floors channel is not available . Please `/config` again.")
           });
-          if (nft_wallets.indexOf(wallet) !== nft_wallets.length - 1) return;
-          collections.forEach(async (collection) => {
-            let stats = "";
-            const statsUrl = `https://api.opensea.io/api/v1/collection/${collection[1]}/stats`;
-            do {
-              stats = await getUrlOSAPI(statsUrl);
-            } while (!stats || !stats.stats)
-            const floor = Number(stats.stats.floor_price);
-            //owned name floor floor_usd total_worth
-            newCollections.push([collection[2], collection[0], floor.toFixed(4), (floor * ether_usd_price).toFixed(2), (floor * collection[2]).toFixed(4)]);
-            nft_worth = nft_worth + Number((floor * collection[2]).toFixed(4));
-            if (collections.length !== newCollections.length) return;
-            let embeds = [];
-            let collectionsPerArray = [];
-            const numberOfEmbeds = Math.ceil(newCollections.length / 30);
-            const floorEmbeds = await switchIt(numberOfEmbeds, newCollections);
-            const floorChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[0]).catch((e) => {
-              interaction.channel.send("The Floors channel is not available . Please `/config` again.")
-            });
-            if (!floorChannel) return;
-            const floorMessage = await floorChannel.messages.fetch(messages[0]).catch((e) => {
-              interaction.channel.send("The Floors Message is not available . Please `/config` again.")
-            });
-            if (!floorMessage) return;
-            if (floorEmbeds.length === 1) {
-              await floorMessage.edit({
-                embeds: [floorEmbeds[0]],
-                content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
-                components: [row],
-              });
-            } else {
-              await floorMessage.edit({
-                embeds: [floorEmbeds[0]],
-                content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
-                components: [row_left],
-              });
-              let counter = 0;
-              const collector = floorMessage.createMessageComponentCollector({
-                componentType: 'BUTTON',
-                idle: 120000
-              });
-              collector.on("collect", async (i) => {
-                await i.deferUpdate();
-                if (counter === 0 && i.customId === "left") return;
-                if (counter === floorEmbeds.length - 1 && i.customId === "right") return;
-                if (i.customId === "right") {
-                  ++counter;
-                  let xdRow = counter === floorEmbeds.length - 1 ? row_right : row_middle;
-                  await floorMessage.edit({
-                    embeds: [floorEmbeds[counter]],
-                    components: [xdRow],
-                  });
-                } else if (i.customId === "left") {
-                  --counter
-                  let xdRow = counter === 0 ? row_left : row_middle;
-                  await floorMessage.edit({
-                    embeds: [floorEmbeds[counter]],
-                    components: [xdRow],
-                  });
-                }
-              });
-              collector.on("end", async (collected) => {
-                await floorMessage.edit({
-                  components: [row],
-                }).catch((e) => { });
-                return;
-              });
-            }
-
-
-
-
-
-
-
-
-
-            const eth_nft = nft_worth.toFixed(4);
-
-
-
-
-
-
-
-
-
-            // NFT ENDS
-            const totalEth = Number(Number(liquid_eth) + Number(eth_nft)).toFixed(4);
-            const totalEthUSD = (totalEth * ether_usd_price).toFixed(2);
-            // POTFOLIO STARTS
-            const portFolioDescription = `:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth * ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft * ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
-            const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`, null, portFolioDescription);
-            const portfolioChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[2]).catch((e) => {
-              interaction.channel.send("The Portfolio channel is not available . Please `/config` again.")
-            });
-            if (!portfolioChannel) return;
-            const portfolioMessage = await portfolioChannel.messages.fetch(messages[2]).catch((e) => {
-              interaction.channel.send("The Portfolio Message is not available . Please `/config` again.")
-            });
-            if (!portfolioMessage) return;
-            await portfolioMessage.edit({
-              embeds: [portFolioEmbed],
+          if (!floorChannel) return;
+          const floorMessage = await floorChannel.messages.fetch(messages[0]).catch((e) => {
+            interaction.channel.send("The Floors Message is not available . Please `/config` again.")
+          });
+          if (!floorMessage) return;
+          if (floorEmbeds.length === 1) {
+            await floorMessage.edit({
+              embeds: [floorEmbeds[0]],
               content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
               components: [row],
             });
-            await sentxd.delete().catch();
+          } else {
+            await floorMessage.edit({
+              embeds: [floorEmbeds[0]],
+              content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
+              components: [row_left],
+            });
+            let counter = 0;
+            const collector = floorMessage.createMessageComponentCollector({
+              componentType: 'BUTTON',
+              idle: 120000
+            });
+            collector.on("collect", async (i) => {
+              await i.deferUpdate();
+              if (counter === 0 && i.customId === "left") return;
+              if (counter === floorEmbeds.length - 1 && i.customId === "right") return;
+              if (i.customId === "right") {
+                ++counter;
+                let xdRow = counter === floorEmbeds.length - 1 ? row_right : row_middle;
+                await floorMessage.edit({
+                  embeds: [floorEmbeds[counter]],
+                  components: [xdRow],
+                });
+              } else if (i.customId === "left") {
+                --counter
+                let xdRow = counter === 0 ? row_left : row_middle;
+                await floorMessage.edit({
+                  embeds: [floorEmbeds[counter]],
+                  components: [xdRow],
+                });
+              }
+            });
+            collector.on("end", async (collected) => {
+              await floorMessage.edit({
+                components: [row],
+              }).catch((e) => { });
+              return;
+            });
+          };
+          const eth_nft = nft_worth.toFixed(4);
+          const totalEth = Number(Number(liquid_eth) + Number(eth_nft)).toFixed(4);
+          const totalEthUSD = (totalEth * ether_usd_price).toFixed(2);
+          const portFolioDescription = `:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth * ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft * ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
+          const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`, null, portFolioDescription);
+          const portfolioChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[2]).catch((e) => {
+            interaction.channel.send("The Portfolio channel is not available . Please `/config` again.")
           });
+          if (!portfolioChannel) return;
+          const portfolioMessage = await portfolioChannel.messages.fetch(messages[2]).catch((e) => {
+            interaction.channel.send("The Portfolio Message is not available . Please `/config` again.")
+          });
+          if (!portfolioMessage) return;
+          await portfolioMessage.edit({
+            embeds: [portFolioEmbed],
+            content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
+            components: [row],
+          });
+          await sentxd.delete().catch((e) => { });
         });
       });
     } catch (e) {
