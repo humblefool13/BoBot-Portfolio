@@ -18,7 +18,7 @@ const row = new MessageActionRow()
 module.exports = {
   name: "config",
   async interact(client, interaction) {
-    if(interaction.channel.type==="DM"||interaction.channel.type==="GROUP_DM"){
+    if(!interaction.channel){
       return interaction.reply({
         content : "This command can only be used inside a Server , not in a DM / Group DM."
       });
