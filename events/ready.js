@@ -6,6 +6,7 @@ module.exports = {
   name: 'ready',
   once: true,
   async execute(client) {
+    console.log("Bot is on");
     async function configFilter() {
       const subs = await sub_records.find();
       const configs = await config_records.find();
