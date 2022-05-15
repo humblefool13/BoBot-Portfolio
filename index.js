@@ -18,4 +18,4 @@ require('./databases/freeTrials')();
 require('./databases/configRecords')();
 require('./databases/subscriptionRecords')();
 
-client.login(process.env['bot_token-test']);
+client.login(process.env['bot_token']);

@@ -3,10 +3,12 @@
     "ascii-table": "^0.0.9",
     "discord.js": "^13.6.0",
     "fs": "^0.0.1-security",
+    "got": "^11.8.3",
     "limiter": "^2.1.0",
     "mongoose": "^6.3.1",
     "node-fetch": "^2.6.7",
     "scrapingbee": "^1.6.1",
+    "tunnel": "^0.0.6",
     "web3": "^1.7.3"
   }
 }

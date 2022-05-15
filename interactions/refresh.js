@@ -3,6 +3,17 @@ const {
   MessageActionRow,
   MessageButton
 } = require("discord.js");
+const got = require('got');
+const serversListA = require('./servers');
+const serversList = serversListA.arr;
+const tunnel = require('tunnel');
+let si = 0;
+const getHost = () => {
+  si++;
+  if (si === serversList.length) si = 0;
+  const [host, port] = serversList[si].split(':');
+  return { host, port };
+};
 const row_left = new MessageActionRow()
   .addComponents(
     new MessageButton()
@@ -39,40 +50,59 @@ const row_right = new MessageActionRow()
       .setDisabled(true)
   );
 const mongoose = require("mongoose");
-const {
-  RateLimiter
-} = require("limiter");
 const config_records = require('../models/configRecords');
 const etherscan_key = process.env['etherscan_key'];
 const fetch = require("node-fetch");
-const limiter_OS = new RateLimiter({
-  tokensPerInterval: 4,
-  interval: "second",
-  fireImmediately: true
-});
-const limiter_eth = new RateLimiter({
-  tokensPerInterval: 5,
-  interval: "second",
-  fireImmediately: true
-});
 async function getEther(stra) {
-  const remainingRequests = await limiter_eth.removeTokens(1);
-  if (remainingRequests < 0) return;
   const etherscanUrl = `https://api.etherscan.io/api?module=account&action=balancemulti&address=${stra}&tag=latest&apikey=${etherscan_key}`;
   const balanceResponse = await fetch(etherscanUrl);
   const balanceResult = await balanceResponse.json();
   return balanceResult;
 };
-async function getUrlOSAPI(url) {
-  const remainingRequests = await limiter_OS.removeTokens(1);
-  if (remainingRequests < 0) return;
-  const result = await fetch(url);
-  const response = await result.json();
-  return response;
+const procreq = async (url) => {
+  try {
+    const request = got(url, {
+      agent: {
+        https: tunnel.httpsOverHttp({
+          proxy: getHost(),
+        }),
+      },
+    });
+    const p2 = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        request.cancel();
+        resolve('');
+      }, 5 * 1000);
+    });
+    return await Promise.race([request, p2]);
+  } catch (err) {
+    throw err;
+  }
+};
+
+const processWithRetry = async (url) => {
+  try {
+    const ra = [...new Array(60)].map((r) => 1); 
+    let apiresp;
+    const resp = await ra.reduce(async (previousPromise, nextID) => {
+      try {
+        const res = await previousPromise;
+        if (!res?.body && !apiresp) {
+          return procreq(url);
+        }
+        if (res?.body) apiresp = res?.body;
+        return Promise.resolve();
+      } catch (err) {
+        return procreq(url);
+      }
+    }, Promise.resolve());
+    return apiresp;
+  } catch (err) {
+    console.log(err);
+    return '';
+  }
 };
 async function ether_usd() {
-  const remainingRequests = await limiter_eth.removeTokens(1);
-  if (remainingRequests < 0) return;
   const etherurl = `https://api.etherscan.io/api?module=stats&action=ethprice&apikey=${etherscan_key}`;
   const etherresult = await fetch(etherurl);
   const etherresponse = await etherresult.json();
@@ -209,7 +239,8 @@ async function switchIt(n, newCollections) {
 async function getCollections(wallet) {
   let collectionsxd = [];
   const collections_url = `https://api.opensea.io/api/v1/collections?asset_owner=${wallet}&limit=300`;
-  const collections_owned = await getUrlOSAPI(collections_url);
+  let collections_owned = await processWithRetry(collections_url);
+  collections_owned = JSON.parse(collections_owned);
   collections_owned.forEach((collection) => {
     const find = collectionsxd.find((e) => {
       e[0] === collection.name
@@ -300,8 +331,9 @@ module.exports = {
           let stats = "";
           const statsUrl = `https://api.opensea.io/api/v1/collection/${collection[1]}/stats`;
           do {
-            stats = await getUrlOSAPI(statsUrl);
+            stats = await processWithRetry(statsUrl);
           } while (!stats || !stats.stats)
+          stats = JSON.parse(stats);
           const floor = Number(stats.stats.floor_price);
           newCollections.push([collection[2], collection[0], floor.toFixed(4), (floor * ether_usd_price).toFixed(2), (floor * collection[2]).toFixed(4)]);
           nft_worth = nft_worth + Number((floor * collection[2]).toFixed(4));
