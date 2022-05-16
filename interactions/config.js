@@ -181,7 +181,7 @@ module.exports = {
         }).save().catch((e) => {
           console.log(e)
         });
-        await sendDm.delete().catch((e)=>{});
+        await sendDm.delete().catch((e) => {});
         return interaction.editReply({
           content: `Your Bobot kit is setup below , the button below is for floor prices , wallets , entire portfolio refresh !\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`
         });
