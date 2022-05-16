@@ -18,11 +18,6 @@ const row = new MessageActionRow()
 module.exports = {
   name: "config",
   async interact(client, interaction) {
-    if(!interaction.channel){
-      return interaction.reply({
-        content : "This command can only be used inside a Server , not in a DM / Group DM."
-      });
-    };
     let channel_ids = [];
     let message_ids = [];
     await interaction.deferReply();
@@ -32,10 +27,18 @@ module.exports = {
     if (!find) return interaction.editReply({
       content: "You would need a valid subscription to use this command . To learn more about subscriptions use the \`/subscribe\` slash command."
     });
+    let sendDm = "";
     try {
-      if (!interaction.memberPermissions.has("ADMINISTRATOR") && !interaction.memberPermissions.has("MANAGE_GUILD") && interaction.user.id !== interaction.guild.ownerId) return interaction.editReply({
+      let dm = false;
+      if (!interaction.channel) dm = true;
+      if (dm === false && !interaction.memberPermissions?.has("ADMINISTRATOR") && !interaction.memberPermissions?.has("MANAGE_GUILD") && interaction.user.id !== interaction.guild?.ownerId) return interaction.editReply({
         content: "This command can only be used by you in a Discord Server where either of the following apply :\n1) You are the Owner of the Discord Server.\n2) You have the **ADMINISTRATOR** permission in the server.\n3) You have the **MANAGE SERVER** permission in the server. Add me to your server by clicking on \"Add to Server\" on my profile or invite me using this link - https://discord.com/oauth2/authorize?client_id=969112729631735828&scope=bot%20applications.commands&permissions=67600 ."
       });
+      if (dm) {
+        interaction.user.send("Testing If I can DM you.")
+          .then((sent) => sendDm = sent)
+          .catch((e) => { return interaction.editReply({ content: "I cannot DM you , Please check your privacy settings.", ephemeral: true }) });
+      };
       let nft_wallets = [];
       let wallets = [];
       const nft_1 = interaction.options.getString('nft_1');
@@ -108,48 +111,84 @@ module.exports = {
           content: `The wallet you provided ${eth_8} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`
         });
       };
-      interaction.guild.channels.create("BoBot PortFolio", {
-        type: "GUILD_CATEGORY"
-      })
-        .then(async (category) => {
-          const floors_channel = await category.createChannel("floors", {
-            topic: "Get real time floor prices of collections owned by just clicking a button!!!"
+      if (dm === false) {
+        interaction.guild.channels.create("BoBot PortFolio", {
+          type: "GUILD_CATEGORY"
+        })
+          .then(async (category) => {
+            const floors_channel = await category.createChannel("floors", {
+              topic: "Get real time floor prices of collections owned by just clicking a button!!!"
+            });
+            const wallets_channel = await category.createChannel("wallets", {
+              topic: "Get real time stats of wallets owned by just clicking a button!!!"
+            });
+            const portfolio_channel = await category.createChannel("portfolio", {
+              topic: "Get real time portfolio by just clicking a button!!!"
+            });
+            channel_ids = [floors_channel.id, wallets_channel.id, portfolio_channel.id];
+            const floor_msg = await floors_channel.send({
+              components: [row]
+            });
+            const wallet_msg = await wallets_channel.send({
+              components: [row]
+            });
+            const portfolio_msg = await portfolio_channel.send({
+              components: [row]
+            });
+            message_ids = [floor_msg.id, wallet_msg.id, portfolio_msg.id];
+            await config_records.deleteOne({
+              discord_id: interaction.user.id,
+            }).catch((e) => {
+              console.log(e)
+            });
+            await new config_records({
+              discord_id: interaction.user.id,
+              nft_wallets: nft_wallets,
+              dm: false,
+              wallets: wallets,
+              channel_ids: channel_ids,
+              message_ids: message_ids,
+            }).save().catch((e) => {
+              console.log(e)
+            });
+            return interaction.editReply({
+              content: `Your Bobot kit is setup at the category named \"BOBOT PORTFOLIO\" with channels <#${channel_ids.join("> , <#")}>.\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`
+            });
           });
-          const wallets_channel = await category.createChannel("wallets", {
-            topic: "Get real time stats of wallets owned by just clicking a button!!!"
-          });
-          const portfolio_channel = await category.createChannel("portfolio", {
-            topic: "Get real time portfolio by just clicking a button!!!"
-          });
-          channel_ids = [floors_channel.id, wallets_channel.id, portfolio_channel.id];
-          const floor_msg = await floors_channel.send({
-            components: [row]
-          });
-          const wallet_msg = await wallets_channel.send({
-            components: [row]
-          });
-          const portfolio_msg = await portfolio_channel.send({
-            components: [row]
-          });
-          message_ids = [floor_msg.id, wallet_msg.id, portfolio_msg.id];
-          await config_records.deleteOne({
-            discord_id: interaction.user.id,
-          }).catch((e) => {
-            console.log(e)
-          });
-          await new config_records({
-            discord_id: interaction.user.id,
-            nft_wallets: nft_wallets,
-            wallets: wallets,
-            channel_ids: channel_ids,
-            message_ids: message_ids,
-          }).save().catch((e) => {
-            console.log(e)
-          });
-          return interaction.editReply({
-            content: `Your Bobot kit is setup at the category named \"BOBOT PORTFOLIO\" with channels <#${channel_ids.join("> , <#")}>.\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`
-          });
+      } else {
+        channel_ids = [];
+        const floor_msg = await interaction.user.send({
+          content: "Floor Prices"
         });
+        const wallet_msg = await interaction.user.send({
+          content: "Wallets"
+        });
+        const portfolio_msg = await interaction.user.send({
+          content: "Portfolio",
+          components: [row]
+        });
+        message_ids = [floor_msg.id, wallet_msg.id, portfolio_msg.id];
+        await config_records.deleteOne({
+          discord_id: interaction.user.id,
+        }).catch((e) => {
+          console.log(e)
+        });
+        await new config_records({
+          discord_id: interaction.user.id,
+          nft_wallets: nft_wallets,
+          dm: true,
+          wallets: wallets,
+          channel_ids: channel_ids,
+          message_ids: message_ids,
+        }).save().catch((e) => {
+          console.log(e)
+        });
+        return interaction.editReply({
+          content: `Your Bobot kit is setup above , the button above is for floor prices , wallets , entire portfolio refresh !\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`
+        });
+        sendDm.delete().catch((e) => { });
+      }
+
     } catch (e) {
       console.log(e);
       if (interaction.deferred) {
