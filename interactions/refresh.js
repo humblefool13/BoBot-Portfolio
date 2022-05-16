@@ -250,14 +250,17 @@ module.exports = {
   name: "refresh",
   async interact(client, interaction) {
     let nft_worth = 0;
+    let dm = false;
     await interaction.deferUpdate();
+    const channelxd = await client.channels.fetch(interaction.channelId);
+    if (channelxd.type==="DM"||channelxd.type==="GROUP_DM") dm = true;
     try {
       let collections = [];
       let newCollections = [];
       let etherResponse = "";
       const configs = await config_records.find();
       configs.forEach(async (configuration) => {
-        if (interaction.channel) {
+        if (!dm) {
           const channels = configuration.channel_ids;
           if (!channels.includes(interaction.channel.id)) return;
           const sentxd = await interaction.channel.send({
