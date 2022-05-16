@@ -24,6 +24,11 @@ module.exports = {
         .setTitle("4) Something Else")
         .setColor("#454be9")
         .setDescription("➭ Are you facing some issues ?\n➭ Did your subscription not validate ?\n➭ Have some feedback / suggestion ?\n**. . .**\n\nYou are always welcome to join our [discord support server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !') for anything you would like to talk to us regarding the bot !\nWe would love to hear from you !!!");
+      if(!interaction.channel){
+        return interaction.reply({
+          embeds : [subscription,config,refresh,more]
+        });
+      };
       const row_left = new MessageActionRow()
         .addComponents(
           new MessageButton()
@@ -73,77 +78,76 @@ module.exports = {
             .setDisabled(true)
         );
       let counter = 0;
-      interaction.reply({
+      const sent = await interaction.reply({
         embeds: [subscription],
         components: [row_left],
-        fetchReply: true
-      }).then((sent) => {
-        const collector = sent.createMessageComponentCollector({
-          componentType: 'BUTTON',
-          idle: 60000
-        });
-        collector.on("collect", async (i) => {
-          if (i.user.id !== interaction.user.id) {
-            return i.reply({
-              content: "These buttons aren't for you.",
-              ephemeral: true,
-            });
-          };
-          await i.deferUpdate();
-          if (counter === 0) {
+        fetchReply : true,
+      });
+      const collector = sent.createMessageComponentCollector({
+        componentType: 'BUTTON',
+        idle: 60000
+      });
+      collector.on("collect", async (i) => {
+        if (i.user.id !== interaction.user.id) {
+          return i.reply({
+            content: "These buttons aren't for you.",
+            ephemeral: true,
+          });
+        };
+        await i.deferUpdate();
+        if (counter === 0) {
+          await interaction.editReply({
+            embeds: [config],
+            components: [row_middle],
+          });
+          ++counter;
+          return;
+        } else if (counter === 1) {
+          if (i.customId === "left") {
             await interaction.editReply({
-              embeds: [config],
-              components: [row_middle],
+              embeds: [subscription],
+              components: [row_left],
             });
-            ++counter;
+            --counter;
             return;
-          } else if (counter === 1) {
-            if (i.customId === "left") {
-              await interaction.editReply({
-                embeds: [subscription],
-                components: [row_left],
-              });
-              --counter;
-              return;
-            } else if (i.customId === "right") {
-              await interaction.editReply({
-                embeds: [refresh],
-                components: [row_middle],
-              });
-              ++counter;
-              return;
-            };
-          } else if (counter === 2) {
-            if (i.customId === "left") {
-              await interaction.editReply({
-                embeds: [config],
-                components: [row_middle],
-              });
-              --counter;
-              return;
-            } else if (i.customId === "right") {
-              await interaction.editReply({
-                embeds: [more],
-                components: [row_right],
-              });
-              ++counter;
-              return;
-            };
-          } else if (counter === 3) {
+          } else if (i.customId === "right") {
             await interaction.editReply({
               embeds: [refresh],
               components: [row_middle],
             });
-            --counter;
+            ++counter;
             return;
           };
-        });
-        collector.on("end", async (collected) => {
+        } else if (counter === 2) {
+          if (i.customId === "left") {
+            await interaction.editReply({
+              embeds: [config],
+              components: [row_middle],
+            });
+            --counter;
+            return;
+          } else if (i.customId === "right") {
+            await interaction.editReply({
+              embeds: [more],
+              components: [row_right],
+            });
+            ++counter;
+            return;
+          };
+        } else if (counter === 3) {
           await interaction.editReply({
-            components: [dead_buttons],
-          }).catch((e) => { });
+            embeds: [refresh],
+            components: [row_middle],
+          });
+          --counter;
           return;
-        });
+        };
+      });
+      collector.on("end", async (collected) => {
+        await interaction.editReply({
+          components: [dead_buttons],
+        }).catch((e) => { });
+        return;
       });
     } catch (e) {
       console.log(e);

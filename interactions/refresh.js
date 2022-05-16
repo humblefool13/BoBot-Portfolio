@@ -261,7 +261,7 @@ module.exports = {
           const channels = configuration.channel_ids;
           if (!channels.includes(interaction.channel.id)) return;
           const sentxd = await interaction.channel.send({
-            content: "<a:CH_IconLoading:973124874124005396>\nThis message will delete automatically after all - floors , wallets , portfolio channels are updated."
+            content: "<a:CH_IconLoading:973124874124005396>\nThis message will delete automatically after all - floors , wallets , portfolio channels are updated. Sometimes it takes times depending on the traffic so please have patience."
           });
           const userid = configuration.discord_id;
           const user = await client.users.fetch(userid);
@@ -385,8 +385,8 @@ module.exports = {
           });
         } else {
           if(interaction.user.id!==configuration.discord_id) return;
-          const sentxd = await interaction.channel.send({
-            content: "<a:CH_IconLoading:973124874124005396>\nThis message will delete automatically after all - floors , wallets , portfolio messages are updated."
+          const sentxd = await interaction.user.send({
+            content: "<a:CH_IconLoading:973124874124005396>\nThis message will delete automatically after all - floors , wallets , portfolio messages are updated. Sometimes it takes times depending on the traffic so please have patience."
           });
           const userid = configuration.discord_id;
           const user = await client.users.fetch(userid);
@@ -434,7 +434,7 @@ module.exports = {
               await floorMessage.edit({
                 embeds: [floorEmbeds[0]],
                 content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
-                components: [row],
+                components : null,
               });
             } else {
               await floorMessage.edit({
@@ -469,7 +469,7 @@ module.exports = {
               });
               collector.on("end", async (collected) => {
                 await floorMessage.edit({
-                  components: [row],
+                  components: null,
                 }).catch((e) => { });
                 return;
               });

@@ -35,9 +35,7 @@ module.exports = {
         content: "This command can only be used by you in a Discord Server where either of the following apply :\n1) You are the Owner of the Discord Server.\n2) You have the **ADMINISTRATOR** permission in the server.\n3) You have the **MANAGE SERVER** permission in the server. Add me to your server by clicking on \"Add to Server\" on my profile or invite me using this link - https://discord.com/oauth2/authorize?client_id=969112729631735828&scope=bot%20applications.commands&permissions=67600 ."
       });
       if (dm) {
-        interaction.user.send("Testing If I can DM you.")
-          .then((sent) => sendDm = sent)
-          .catch((e) => { return interaction.editReply({ content: "I cannot DM you , Please check your privacy settings.", ephemeral: true }) });
+        sendDm = await interaction.user.send("Testing If I can DM you.").catch((e) => { return interaction.editReply({ content: "I cannot DM you , Please check your privacy settings.", ephemeral: true }) });
       };
       let nft_wallets = [];
       let wallets = [];
@@ -183,12 +181,11 @@ module.exports = {
         }).save().catch((e) => {
           console.log(e)
         });
+        await sendDm.delete().catch((e) => {});
         return interaction.editReply({
-          content: `Your Bobot kit is setup above , the button above is for floor prices , wallets , entire portfolio refresh !\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`
+          content: `Your Bobot kit is setup below , the button below is for floor prices , wallets , entire portfolio refresh !\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`
         });
-        sendDm.delete().catch((e) => { });
       }
-
     } catch (e) {
       console.log(e);
       if (interaction.deferred) {
