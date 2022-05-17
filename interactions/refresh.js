@@ -427,7 +427,8 @@ module.exports = {
               stats = await getUrlOSAPI(statsUrl);
             } while (!stats || !stats.stats)
             let floor = Number(stats.stats.floor_price);
-            if(!floor) floor=50;
+            if(!floor) floor=0;
+            if(collection[1]==="cryptopunks") floor=50;
             newCollections.push([collection[2], collection[0], floor.toFixed(4), (floor * ether_usd_price).toFixed(2), (floor * collection[2]).toFixed(4)]);
             nft_worth = nft_worth + Number((floor * collection[2]).toFixed(4));
             if (collections.length !== newCollections.length) return;
