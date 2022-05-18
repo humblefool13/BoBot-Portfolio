@@ -8,6 +8,10 @@ module.exports = {
   name: "help",
   async interact(client, interaction) {
     try {
+      const general = new MessageEmbed()
+        .setTitle("BoBot Help")
+        .setColor("#454be9")
+        .setDescription("The Bot comes with the following commands :\n`/about` : About the Bot\n`/config` : To setup your wallets \n`/help` : This command\n`/subscribe` : Learn more about subscriptions");
       const subscription = new MessageEmbed()
         .setTitle("1) Subscription")
         .setColor("#454be9")
@@ -26,7 +30,7 @@ module.exports = {
         .setDescription("➭ Are you facing some issues ?\n➭ Did your subscription not validate ?\n➭ Have some feedback / suggestion ?\n**. . .**\n\nYou are always welcome to join our [discord support server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !') for anything you would like to talk to us regarding the bot !\nWe would love to hear from you !!!");
       if(!interaction.channel){
         return interaction.reply({
-          embeds : [subscription,config,refresh,more]
+          embeds : [general,subscription,config,refresh,more]
         });
       };
       const row_left = new MessageActionRow()
@@ -79,7 +83,7 @@ module.exports = {
         );
       let counter = 0;
       const sent = await interaction.reply({
-        embeds: [subscription],
+        embeds: [general,subscription],
         components: [row_left],
         fetchReply : true,
       });
@@ -105,7 +109,7 @@ module.exports = {
         } else if (counter === 1) {
           if (i.customId === "left") {
             await interaction.editReply({
-              embeds: [subscription],
+              embeds: [general,subscription],
               components: [row_left],
             });
             --counter;
