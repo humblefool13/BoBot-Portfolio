@@ -212,7 +212,7 @@ async function getCollections(wallet) {
   const collections_url = `https://api.opensea.io/api/v1/collections?asset_owner=${wallet}&limit=300`;
   do{
     collections_owned = await getUrlOSAPI(collections_url);
-  } while(!collections_owned||!collections_owned.length||!collections_owned[0]?.primary_asset_contracts)
+  } while(!Array.isArray(collections_owned))
   collections_owned.forEach((collection) => {
     const find = collectionsxd.find((e) => {
       e[0] === collection.name
