@@ -43,7 +43,10 @@ const {
   RateLimiter
 } = require("limiter");
 const config_records = require('../models/configRecords');
-const etherscan_key = process.env['etherscan_key'];
+let etherscan_key = process.env['etherscan_key'];
+etherscan_key=etherscan_key.split(",");
+let eklength = etherscan_key.length;
+let ekv=0;
 const fetch = require("node-fetch");
 const limiter_OS = new RateLimiter({
   tokensPerInterval: 4,
@@ -51,14 +54,15 @@ const limiter_OS = new RateLimiter({
   fireImmediately: true
 });
 const limiter_eth = new RateLimiter({
-  tokensPerInterval: 5,
+  tokensPerInterval: 5*eklength,
   interval: "second",
   fireImmediately: true
 });
 async function getEther(stra) {
   const remainingRequests = await limiter_eth.removeTokens(1);
   if (remainingRequests < 0) return;
-  const etherscanUrl = `https://api.etherscan.io/api?module=account&action=balancemulti&address=${stra}&tag=latest&apikey=${etherscan_key}`;
+  const etherscanUrl = `https://api.etherscan.io/api?module=account&action=balancemulti&address=${stra}&tag=latest&apikey=${etherscan_key[ekv++]}`;
+  if(ekv===eklength) ekv=0;
   const balanceResponse = await fetch(etherscanUrl);
   const balanceResult = await balanceResponse.json();
   return balanceResult;
@@ -73,7 +77,8 @@ async function getUrlOSAPI(url) {
 async function ether_usd() {
   const remainingRequests = await limiter_eth.removeTokens(1);
   if (remainingRequests < 0) return;
-  const etherurl = `https://api.etherscan.io/api?module=stats&action=ethprice&apikey=${etherscan_key}`;
+  const etherurl = `https://api.etherscan.io/api?module=stats&action=ethprice&apikey=${etherscan_key[ekv++]}`;
+  if(ekv===eklength) ekv=0;
   const etherresult = await fetch(etherurl);
   const etherresponse = await etherresult.json();
   const eth_usd = (Number(etherresponse.result.ethusd)).toFixed(2);

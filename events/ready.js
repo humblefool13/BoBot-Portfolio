@@ -9,16 +9,15 @@ module.exports = {
     console.log("Bot is on");
     async function configFilter() {
       const subs = await sub_records.find();
-      const configs = await config_records.find();
       subs.forEach(async (sub) => {
         const end_timestamp = sub.end_timestamp;
         if (Date.now() < end_timestamp) return;
-        await subs.deleteOne({
+        await sub_records.deleteOne({
           discord_id: sub.discord_id,
         }).catch((e) => {
           console.log(e);
         });
-        await configs.deleteOne({
+        await config_records.deleteOne({
           discord_id: sub.discord_id,
         }).catch((e) => {
           console.log(e);
