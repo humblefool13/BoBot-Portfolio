@@ -354,7 +354,7 @@ module.exports = {
       const balanceOverall = balanceWei.map((e) => [e.account, (Number(e.balance) / Math.pow(10, 18)).toFixed(4), ((Number(e.balance) / Math.pow(10, 18)) * ether_usd_price).toFixed(2)]);
       const walletEmbed = embedGenerator(`${usertag}\'s Wallets`, null, walletDescriptionGenerator(balanceOverall));
       if (dm) {
-        const walletMessage = await client.channels.fetch(interaction.channelId).messages.fetch(messages[1]);
+        const walletMessage = await channel.messages.fetch(messages[1]);
         walletMessage.edit({
           embeds: [walletEmbed],
           content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
@@ -455,7 +455,7 @@ module.exports = {
               });
             };
           } else {
-            const floorMessage = await client.channels.fetch(interaction.channelId).messages.fetch(messages[0]);
+            const floorMessage = await channel.messages.fetch(messages[0]);
             if (floorEmbeds.length === 1) {
               await floorMessage.edit({
                 embeds: [floorEmbeds[0]],
@@ -543,7 +543,7 @@ module.exports = {
                   components: [row],
                 }).catch((e) => { });
               } else {
-                const ercMessage = await client.channels.fetch(interaction.guild.id).messages.fetch(messages[3]);
+                const ercMessage = await channel.messages.fetch(messages[3]);
                 ercMessage.edit({
                   embeds: [ercEmbed],
                   content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
@@ -566,7 +566,7 @@ module.exports = {
                   components: [row],
                 }).catch((e) => { });
               } else {
-                const ercMessage = await client.channels.fetch(interaction.guild.id).messages.fetch(messages[3]);
+                const ercMessage = await channel.messages.fetch(messages[3]);
                 ercMessage.edit({
                   content: `NO ERC-20 TOKENS FOUND`,
                   embeds: null,
@@ -583,7 +583,7 @@ module.exports = {
             const portFolioDescription = `:white_medium_small_square: **LIQUID**\n:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **NFT(S)**\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **ERC-20 TOKEN(S)**\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ ETH ] : Ξ ${ErcWorthEth.toFixed(4)}\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ USD ] : $ ${ercWorthUSD.toFixed(2)}\n\n:white_medium_small_square: **OVERALL**\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
             const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`, null, portFolioDescription);
             if (!dm) {
-              const portfolioChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[2])
+              const portfolioChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[2]);
               if (!portfolioChannel) return interaction.channel.send({
                 content: "The portfolio channel was not found. Please \`/config\` again.",
               });
@@ -598,7 +598,7 @@ module.exports = {
               }).catch((e) => { });
               await loading.delete().catch(() => { });
             } else {
-              const portfolioMessage = await client.channels.fetch(interaction.channelId).messages.fetch(messages[2]);
+              const portfolioMessage = await channel.messages.fetch(messages[2]);
               await portfolioMessage.edit({
                 embeds: [portFolioEmbed],
                 content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
@@ -624,7 +624,7 @@ module.exports = {
             components: [row],
           }).catch((e) => { });
         } else {
-          const floorMessage = await client.channels.fetch(interaction.channelId).messages.fetch(messages[0]);
+          const floorMessage = await channel.messages.fetch(messages[0]);
           floorMessage.edit({
             content: "NO NFTS FOUND",
             embeds: null,
@@ -672,7 +672,7 @@ module.exports = {
                 components: [row],
               }).catch((e) => { });
             } else {
-              const ercMessage = await client.channels.fetch(interaction.guild.id).messages.fetch(messages[3]);
+              const ercMessage = await channel.messages.fetch(messages[3]);
               ercMessage.edit({
                 embeds: [ercEmbed],
                 content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
@@ -695,7 +695,7 @@ module.exports = {
                 components: [row],
               }).catch((e) => { });
             } else {
-              const ercMessage = await client.channels.fetch(interaction.guild.id).messages.fetch(messages[3]);
+              const ercMessage = await channel.messages.fetch(messages[3]);
               ercMessage.edit({
                 content: `NO ERC-20 TOKENS FOUND`,
                 embeds: null,
@@ -727,7 +727,7 @@ module.exports = {
             }).catch((e) => { });
             await loading.delete().catch(() => { });
           } else {
-            const portfolioMessage = await client.channels.fetch(interaction.channelId).messages.fetch(messages[2]);
+            const portfolioMessage = await channel.messages.fetch(messages[2]);
             await portfolioMessage.edit({
               embeds: [portFolioEmbed],
               content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
