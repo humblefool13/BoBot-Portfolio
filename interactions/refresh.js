@@ -38,6 +38,13 @@ const row_right = new MessageActionRow()
       .setStyle("PRIMARY")
       .setDisabled(true)
   );
+const row = new MessageActionRow()
+  .addComponents(
+    new MessageButton()
+      .setLabel("🔄")
+      .setStyle("SUCCESS")
+      .setCustomId("refresh")
+  );
 const mongoose = require("mongoose");
 const {
   RateLimiter
@@ -58,32 +65,14 @@ const limiter_eth = new RateLimiter({
   interval: "second",
   fireImmediately: true
 });
-async function getEther(stra) {
-  const remainingRequests = await limiter_eth.removeTokens(1);
-  if (remainingRequests < 0) return;
-  const etherscanUrl = `https://api.etherscan.io/api?module=account&action=balancemulti&address=${stra}&tag=latest&apikey=${etherscan_key[ekv++]}`;
-  if (ekv === eklength) ekv = 0;
-  const balanceResponse = await fetch(etherscanUrl);
-  const balanceResult = await balanceResponse.json();
-  return balanceResult;
-};
-async function getUrlOSAPI(url) {
-  const remainingRequests = await limiter_OS.removeTokens(1);
-  if (remainingRequests < 0) return;
-  const result = await fetch(url);
-  const response = await result.json();
-  return response;
-};
-async function ether_usd() {
-  const remainingRequests = await limiter_eth.removeTokens(1);
-  if (remainingRequests < 0) return;
-  const etherurl = `https://api.etherscan.io/api?module=stats&action=ethprice&apikey=${etherscan_key[ekv++]}`;
-  if (ekv === eklength) ekv = 0;
-  const etherresult = await fetch(etherurl);
-  const etherresponse = await etherresult.json();
-  const eth_usd = (Number(etherresponse.result.ethusd)).toFixed(2);
-  return eth_usd;
-};
+const limiter_cv = new RateLimiter({
+  tokensPerInterval: 5,
+  interval: "second",
+  fireImmediately: true
+});
+
+////////////// SYNC FUNCTIONS //////////////
+
 function embedGenerator(title, url, description) {
   const returnEmbed = new MessageEmbed().setColor("#454be9").setTitle(title).setDescription(description);
   if (url) returnEmbed.setURL(url);
@@ -118,13 +107,44 @@ function liquidCalculator(arr) {
   });
   return liquidTotal;
 };
-const row = new MessageActionRow()
-  .addComponents(
-    new MessageButton()
-      .setLabel("🔄")
-      .setStyle("SUCCESS")
-      .setCustomId("refresh")
-  );
+function ercProcess(arr) {
+  let arrFinal = [];
+  arr.forEach((balances) => {
+    balances.forEach((e) => {
+      if (e[0] === "Ether") return;
+      const symbol = e[1];
+      const find = arrFinal.find((el) => el[1] === symbol);
+      if (!find) {
+        arrFinal.push(e);
+      } else {
+        const index = arrFinal.indexOf(find);
+        const newBalance = Number(find[3]) + Number(e[3]);
+        const newWorth = Number(find[4]) + Number(e[4]);
+        arrFinal[index] = [e[0], e[1], e[2], newBalance, newWorth];
+      }
+    });
+  });
+  return arrFinal;
+};
+function ercWorth(arr) {
+  let worth = 0;
+  arr.forEach((r) => {
+    worth = worth + Number(r[4]);
+  });
+  return Number(worth);
+};
+function ercDescriptionGenerator(arr) {
+  let description = "\`\`\`Name - Symbol - Rate [ USD ] - Balance - Worth [ USD ]\n";
+  arr.forEach((e) => {
+    const line = e.join(" - ");
+    description = description + "\n" + line;
+  });
+  description = description + "```";
+  return description;
+};
+
+////////////// ASYNC FUNCTIONS //////////////
+
 async function switchIt(n, newCollections) {
   let embeds = [];
   switch (n) {
@@ -253,310 +273,470 @@ async function concatenateArrays(arr1, arr2) {
   });
   return array;
 };
+async function getEther(stra) {
+  const remainingRequests = await limiter_eth.removeTokens(1);
+  if (remainingRequests < 0) return;
+  const etherscanUrl = `https://api.etherscan.io/api?module=account&action=balancemulti&address=${stra}&tag=latest&apikey=${etherscan_key[ekv++]}`;
+  if (ekv === eklength) ekv = 0;
+  const balanceResponse = await fetch(etherscanUrl);
+  const balanceResult = await balanceResponse.json();
+  return balanceResult;
+};
+async function getUrlOSAPI(url) {
+  const remainingRequests = await limiter_OS.removeTokens(1);
+  if (remainingRequests < 0) return;
+  const result = await fetch(url);
+  const response = await result.json();
+  return response;
+};
+async function ether_usd() {
+  const remainingRequests = await limiter_eth.removeTokens(1);
+  if (remainingRequests < 0) return;
+  const etherurl = `https://api.etherscan.io/api?module=stats&action=ethprice&apikey=${etherscan_key[ekv++]}`;
+  if (ekv === eklength) ekv = 0;
+  const etherresult = await fetch(etherurl);
+  const etherresponse = await etherresult.json();
+  const eth_usd = (Number(etherresponse.result.ethusd)).toFixed(2);
+  const final = Number(eth_usd);
+  return final;
+};
+async function getUrlCovalent(url) {
+  const remainingRequests = await limiter_cv.removeTokens(1);
+  if (remainingRequests < 0) return;
+  const response = await fetch(url);
+  const result = await response.json();
+  return result;
+};
+
 
 module.exports = {
   name: "refresh",
   async interact(client, interaction) {
-    let nft_worth = 0;
-    let dm = false;
-    await interaction.deferUpdate();
-    const channelxd = await client.channels.fetch(interaction.channelId);
-    if (channelxd.type === "DM" || channelxd.type === "GROUP_DM") dm = true;
     try {
-      let collections = [];
-      let newCollections = [];
+      await interaction.deferUpdate();
+      let dm = false;
+      let savedDm = false;
+      const channel = await client.channels.fetch(interaction.channelId);
+      if (channel.type === "DM" || channel.type === "GROUP_DM") dm = true;
+      const find = await config_records.findOne({
+        discord_id: interaction.user.id,
+      });
+      if (!find) return;
+      savedDm = find.dm;
+      if (savedDm !== dm) return;
+      const channels = find.channel_ids;
+      if (!savedDm && !channels.includes(interaction.channelId)) return;
+      const messages = find.message_ids;
+      const wallets = find.wallets;
+      const nft_wallets = find.nft_wallets;
+      const loading = await interaction.channel.send({
+        content: "<a:loading:973124874124005396>"
+      });
+      const userid = find.discord_id;
+      const user = await client.users.fetch(userid);
+      const usertag = user.tag;
+      let nft_worth = 0;
+      let eth_nft = 0;
+      let ErcWorthEth = 0;
+
+      //////////// WALLETS OPERATIONS HERE ////////////
+
+      let ether_usd_price = "";
       let etherResponse = "";
-      const configs = await config_records.find();
-      configs.forEach(async (configuration) => {
-        if (!dm) {
-          const channels = configuration.channel_ids;
-          if (!channels.includes(interaction.channel.id)) return;
-          const sentxd = await interaction.channel.send({
-            content: "<a:CH_IconLoading:973124874124005396>\nThis message will delete automatically after all - floors , wallets , portfolio channels are updated. Sometimes it takes times depending on the traffic so please have patience."
-          });
-          const userid = configuration.discord_id;
-          const user = await client.users.fetch(userid);
-          const usertag = user.tag;
-          const messages = configuration.message_ids;
-          const nft_wallets = configuration.nft_wallets;
-          const wallets = configuration.wallets;
-          const addressString = wallets.join(",");
-          const ether_usd_price = await ether_usd();
+      do {
+        ether_usd_price = await ether_usd();
+      } while (typeof ether_usd_price !== "number")
+      const addressString = wallets.join(",");
+      do {
+        etherResponse = await getEther(addressString);
+      } while (!etherResponse || etherResponse.message !== "OK")
+      const balanceWei = etherResponse.result;
+      const balanceOverall = balanceWei.map((e) => [e.account, (Number(e.balance) / Math.pow(10, 18)).toFixed(4), ((Number(e.balance) / Math.pow(10, 18)) * ether_usd_price).toFixed(2)]);
+      const walletEmbed = embedGenerator(`${usertag}\'s Wallets`, null, walletDescriptionGenerator(balanceOverall));
+      if (dm) {
+        const walletMessage = await client.channels.fetch(interaction.channelId).messages.fetch(messages[1]);
+        walletMessage.edit({
+          embeds: [walletEmbed],
+          content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
+          components: null,
+        }).catch((e) => { });
+      } else {
+        const walletChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[1]);
+        if (!walletChannel) return interaction.channel.send({
+          content: "The wallets channel was not found. Please \`/config\` again."
+        });
+        const walletMessage = await walletChannel.messages.fetch(messages[1]);
+        if (!walletMessage) return interaction.channel.send({
+          content: "The wallets message was not found. Please \`/config\` again."
+        });
+        walletMessage.edit({
+          embeds: [walletEmbed],
+          components: [row],
+          content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
+        }).catch((e) => { });
+      };
+      const liquid_eth = liquidCalculator(balanceOverall);
+
+      //////////// NFT OPERATIONS HERE ////////////
+
+      const collections_1 = await getCollections(nft_wallets[0]);
+      let collections_2 = [];
+      if (nft_wallets.length === 2) {
+        collections_2 = await getCollections(nft_wallets[1]);
+      };
+      const collections = await concatenateArrays(collections_1, collections_2);
+      if (collections.length) {
+        let newCollections = [];
+        collections.forEach(async (collection) => {
+          let stats = "";
+          const statsUrl = `https://api.opensea.io/api/v1/collection/${collection[1]}/stats`;
           do {
-            etherResponse = await getEther(addressString);
-          } while (!etherResponse || etherResponse.message !== "OK")
-          const balanceWei = etherResponse.result;
-          const balanceOverall = balanceWei.map((e) => [e.account, (Number(e.balance) / 1000000000000000000).toFixed(4), ((Number(e.balance) / 1000000000000000000) * ether_usd_price).toFixed(2)]);
-          const walletChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[1]).catch((e) => {
-            interaction.channel.send("The Wallets channel is not available . Please `/config` again.");
-          });
-          if (!walletChannel) return;
-          const walletmessage = await walletChannel.messages.fetch(messages[1]).catch((e) => {
-            interaction.channel.send("The Wallets message is not available . Please `/config` again.");
-          });
-          if (!walletmessage) return;
-          const walletEmbed = embedGenerator(`${usertag}\'s Wallets`, null, walletDescriptionGenerator(balanceOverall));
-          await walletmessage.edit({
-            embeds: [walletEmbed],
-            content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
-            components: [row],
-          });
-          const liquid_eth = liquidCalculator(balanceOverall);
-          const collections_1 = await getCollections(nft_wallets[0]);
-          let collections_2 = [];
-          if (nft_wallets.length === 2) {
-            collections_2 = await getCollections(nft_wallets[1]);
-          };
-          collections = await concatenateArrays(collections_1, collections_2);
-          if (collections.length) {
-            collections.forEach(async (collection) => {
-              let stats = "";
-              const statsUrl = `https://api.opensea.io/api/v1/collection/${collection[1]}/stats`;
-              do {
-                stats = await getUrlOSAPI(statsUrl);
-              } while (!stats || !stats.stats)
-              let floor = Number(stats.stats.floor_price);
-              if (!floor) floor = 0;
-              if (collections[1] === "cryptopunks") floor = 50;
-              newCollections.push([collection[2], collection[0], floor.toFixed(4), (floor * ether_usd_price).toFixed(2), (floor * collection[2]).toFixed(4)]);
-              nft_worth = nft_worth + Number((floor * collection[2]).toFixed(4));
-              if (collections.length !== newCollections.length) return;
-              let embeds = [];
-              let collectionsPerArray = [];
-              const numberOfEmbeds = Math.ceil(newCollections.length / 30);
-              const floorEmbeds = await switchIt(numberOfEmbeds, newCollections);
-              const floorChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[0]).catch((e) => {
-                interaction.channel.send("The Floors channel is not available . Please `/config` again.")
+            stats = await getUrlOSAPI(statsUrl);
+          } while (!stats || !stats.stats)
+          let floor = Number(stats.stats.floor_price);
+          if (!floor) floor = 0;
+          if (collections[1] === "cryptopunks") floor = 50;
+          newCollections.push([collection[2], collection[0], floor.toFixed(4), (floor * ether_usd_price).toFixed(2), (floor * collection[2]).toFixed(4)]);
+          nft_worth = nft_worth + Number((floor * collection[2]).toFixed(4));
+          if (collections.length !== newCollections.length) return;
+          const numberOfEmbeds = Math.ceil(newCollections.length / 30);
+          const floorEmbeds = await switchIt(numberOfEmbeds, newCollections);
+          if (!dm) {
+            const floorChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[0]);
+            if (!floorChannel) return interaction.channel.send({
+              content: "The floors channel was not found. Please \`/config\` again.",
+            });
+            const floorMessage = await floorChannel.messages.fetch(messages[0]);
+            if (!floorMessage) return interaction.channel.send({
+              content: "The floors message was not found. Please \`/config\` again.",
+            });
+            if (floorEmbeds.length === 1) {
+              await floorMessage.edit({
+                embeds: [floorEmbeds[0]],
+                content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
+                components: [row],
+              }).catch((e) => { });
+            } else {
+              await floorMessage.edit({
+                embeds: [floorEmbeds[0]],
+                content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
+                components: [row_left],
+              }).catch((e) => { });
+              let counter = 0;
+              const collector = floorMessage.createMessageComponentCollector({
+                componentType: 'BUTTON',
+                idle: 120000
               });
-              if (!floorChannel) return;
-              const floorMessage = await floorChannel.messages.fetch(messages[0]).catch((e) => {
-                interaction.channel.send("The Floors Message is not available . Please `/config` again.")
+              collector.on("collect", async (i) => {
+                await i.deferUpdate();
+                if (counter === 0 && i.customId === "left") return;
+                if (counter === floorEmbeds.length - 1 && i.customId === "right") return;
+                if (i.customId === "right") {
+                  ++counter;
+                  let xdRow = counter === floorEmbeds.length - 1 ? row_right : row_middle;
+                  await floorMessage.edit({
+                    embeds: [floorEmbeds[counter]],
+                    components: [xdRow],
+                  }).catch((e) => { });
+                } else if (i.customId === "left") {
+                  --counter
+                  let xdRow = counter === 0 ? row_left : row_middle;
+                  await floorMessage.edit({
+                    embeds: [floorEmbeds[counter]],
+                    components: [xdRow],
+                  }).catch((e) => { });
+                }
               });
-              if (!floorMessage) return;
-              if (floorEmbeds.length === 1) {
+              collector.on("end", async (collected) => {
                 await floorMessage.edit({
-                  embeds: [floorEmbeds[0]],
+                  components: [row],
+                }).catch((e) => { });
+                return;
+              });
+            };
+          } else {
+            const floorMessage = await client.channels.fetch(interaction.channelId).messages.fetch(messages[0]);
+            if (floorEmbeds.length === 1) {
+              await floorMessage.edit({
+                embeds: [floorEmbeds[0]],
+                components: null,
+                content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
+              }).catch((e) => { });
+            } else {
+              await floorMessage.edit({
+                embeds: [floorEmbeds[0]],
+                content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
+                components: [row_left],
+              }).catch((e) => { });
+              let counter = 0;
+              const collector = floorMessage.createMessageComponentCollector({
+                componentType: 'BUTTON',
+                idle: 120000
+              });
+              collector.on("collect", async (i) => {
+                await i.deferUpdate();
+                if (counter === 0 && i.customId === "left") return;
+                if (counter === floorEmbeds.length - 1 && i.customId === "right") return;
+                if (i.customId === "right") {
+                  ++counter;
+                  let xdRow = counter === floorEmbeds.length - 1 ? row_right : row_middle;
+                  await floorMessage.edit({
+                    embeds: [floorEmbeds[counter]],
+                    components: [xdRow],
+                  }).catch((e) => { });
+                } else if (i.customId === "left") {
+                  --counter
+                  let xdRow = counter === 0 ? row_left : row_middle;
+                  await floorMessage.edit({
+                    embeds: [floorEmbeds[counter]],
+                    components: [xdRow],
+                  }).catch((e) => { });
+                }
+              });
+              collector.on("end", async (collected) => {
+                await floorMessage.edit({
+                  components: null,
+                }).catch((e) => { });
+                return;
+              });
+            };
+          };
+          const eth_nft = nft_worth.toFixed(4);
+
+          ////////////// ERC 20 OPERATIONS //////////////
+
+          let ercResponses = [];
+          let ercWorthUSD = 0;
+          wallets.forEach(async (wallet) => {
+            let ercResponse = "";
+            const url = `https://api.covalenthq.com/v1/1/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=${process.env['covalent_key']}`;
+            do {
+              ercResponse = await getUrlCovalent(url);
+            } while (!ercResponse || !ercResponse?.data?.items)
+            const tokens = ercResponse.data.items;
+            if (tokens.length) {
+              const balances = tokens.map((e) => [e.contract_name, e.contract_ticker_symbol, e.quote_rate ? e.quote_rate.toFixed(4) : 0, (Number(e.balance) / Math.pow(10, e.contract_decimals)).toFixed(4), e.quote ? e.quote.toFixed(2) : 0]);
+              ercResponses.push(balances);
+            } else {
+              const balances = [];
+              ercResponses.push(balances);
+            }
+            if (ercResponses.length !== wallets.length) return;
+            let ercFinal = ercProcess(ercResponses);
+            if (ercFinal.length) {
+              ercWorthUSD = ercWorth(ercFinal);
+              if (ercFinal.length > 40) ercFinal = ercFinal.slice(0, 40);
+              const ercDescription = ercDescriptionGenerator(ercFinal);
+              const ercEmbed = embedGenerator(`${usertag}\'s ERC-20 Tokens`, null, ercDescription);
+              if (!dm) {
+                const ercChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[3]);
+                if (!ercChannel) return interaction.channel.send({
+                  content: "The ERC-20 channel was not found. Please \`/config\` again.",
+                });
+                const ercMessage = await ercChannel.messages.fetch(messages[3]);
+                if (!ercMessage) return interaction.channel.send({
+                  content: "The ERC-20 message was not found. Please \`/config\` again.",
+                });
+                ercMessage.edit({
+                  embeds: [ercEmbed],
                   content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
                   components: [row],
-                });
+                }).catch((e) => { });
               } else {
-                await floorMessage.edit({
-                  embeds: [floorEmbeds[0]],
-                  content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
-                  components: [row_left],
-                });
-                let counter = 0;
-                const collector = floorMessage.createMessageComponentCollector({
-                  componentType: 'BUTTON',
-                  idle: 120000
-                });
-                collector.on("collect", async (i) => {
-                  await i.deferUpdate();
-                  if (counter === 0 && i.customId === "left") return;
-                  if (counter === floorEmbeds.length - 1 && i.customId === "right") return;
-                  if (i.customId === "right") {
-                    ++counter;
-                    let xdRow = counter === floorEmbeds.length - 1 ? row_right : row_middle;
-                    await floorMessage.edit({
-                      embeds: [floorEmbeds[counter]],
-                      components: [xdRow],
-                    });
-                  } else if (i.customId === "left") {
-                    --counter
-                    let xdRow = counter === 0 ? row_left : row_middle;
-                    await floorMessage.edit({
-                      embeds: [floorEmbeds[counter]],
-                      components: [xdRow],
-                    });
-                  }
-                });
-                collector.on("end", async (collected) => {
-                  await floorMessage.edit({
-                    components: [row],
-                  }).catch((e) => { });
-                  return;
-                });
-              };
-              const eth_nft = nft_worth.toFixed(4);
-              const totalEth = Number(Number(liquid_eth) + Number(eth_nft)).toFixed(4);
-              const totalEthUSD = (totalEth * ether_usd_price).toFixed(2);
-              const portFolioDescription = `:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth * ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft * ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
-              const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`, null, portFolioDescription);
-              const portfolioChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[2]).catch((e) => {
-                interaction.channel.send("The Portfolio channel is not available . Please `/config` again.")
-              });
-              if (!portfolioChannel) return;
-              const portfolioMessage = await portfolioChannel.messages.fetch(messages[2]).catch((e) => {
-                interaction.channel.send("The Portfolio Message is not available . Please `/config` again.")
-              });
-              if (!portfolioMessage) return;
-              await portfolioMessage.edit({
-                embeds: [portFolioEmbed],
-                content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
-                components: [row],
-              });
-              await sentxd.delete().catch((e) => { });
-            });
-          } else {
-            const floorChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[0]).catch((e) => {
-              interaction.channel.send("The Floors channel is not available . Please `/config` again.")
-            });
-            if (!floorChannel) return;
-            const floorMessage = await floorChannel.messages.fetch(messages[0]).catch((e) => {
-              interaction.channel.send("The Floors Message is not available . Please `/config` again.")
-            });
-            if (!floorMessage) return;
-            await floorMessage.edit({
-              content: "No NFT on wallets provided",
-            });
-            const eth_nft = 0;
-            const totalEth = Number(Number(liquid_eth) + Number(eth_nft)).toFixed(4);
-            const totalEthUSD = (totalEth * ether_usd_price).toFixed(2);
-            const portFolioDescription = `:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth * ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft * ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
-            const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`, null, portFolioDescription);
-            const portfolioChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[2]).catch((e) => {
-              interaction.channel.send("The Portfolio channel is not available . Please `/config` again.")
-            });
-            if (!portfolioChannel) return;
-            const portfolioMessage = await portfolioChannel.messages.fetch(messages[2]).catch((e) => {
-              interaction.channel.send("The Portfolio Message is not available . Please `/config` again.")
-            });
-            if (!portfolioMessage) return;
-            await portfolioMessage.edit({
-              embeds: [portFolioEmbed],
-              content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
-              components: [row],
-            });
-            await sentxd.delete().catch((e) => { });
-          }
-        } else {
-          if (interaction.user.id !== configuration.discord_id) return;
-          if(configuration.channel_ids.length) return;
-          const sentxd = await interaction.user.send({
-            content: "<a:CH_IconLoading:973124874124005396>\nThis message will delete automatically after all - floors , wallets , portfolio messages are updated. Sometimes it takes times depending on the traffic so please have patience."
-          });
-          const userid = configuration.discord_id;
-          const user = await client.users.fetch(userid);
-          const usertag = user.tag;
-          const messages = configuration.message_ids;
-          const nft_wallets = configuration.nft_wallets;
-          const wallets = configuration.wallets;
-          const addressString = wallets.join(",");
-          const ether_usd_price = await ether_usd();
-          do {
-            etherResponse = await getEther(addressString);
-          } while (!etherResponse || etherResponse.message !== "OK")
-          const balanceWei = etherResponse.result;
-          const balanceOverall = balanceWei.map((e) => [e.account, (Number(e.balance) / 1000000000000000000).toFixed(4), ((Number(e.balance) / 1000000000000000000) * ether_usd_price).toFixed(2)]);
-          const walletEmbed = embedGenerator(`${usertag}\'s Wallets`, null, walletDescriptionGenerator(balanceOverall));
-          const channel = await interaction.user.dmChannel;
-          const walletMessage = await channel.messages.fetch(messages[1]);
-          await walletMessage.edit({
-            embeds: [walletEmbed],
-            content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
-          });
-          const liquid_eth = liquidCalculator(balanceOverall);
-          const collections_1 = await getCollections(nft_wallets[0]);
-          let collections_2 = [];
-          if (nft_wallets.length === 2) {
-            collections_2 = await getCollections(nft_wallets[1]);
-          };
-          collections = await concatenateArrays(collections_1, collections_2);
-          if (collections.length) {
-            collections.forEach(async (collection) => {
-              let stats = "";
-              const statsUrl = `https://api.opensea.io/api/v1/collection/${collection[1]}/stats`;
-              do {
-                stats = await getUrlOSAPI(statsUrl);
-              } while (!stats || !stats.stats)
-              let floor = Number(stats.stats.floor_price);
-              if (!floor) floor = 0;
-              if (collection[1] === "cryptopunks") floor = 50;
-              newCollections.push([collection[2], collection[0], floor.toFixed(4), (floor * ether_usd_price).toFixed(2), (floor * collection[2]).toFixed(4)]);
-              nft_worth = nft_worth + Number((floor * collection[2]).toFixed(4));
-              if (collections.length !== newCollections.length) return;
-              let embeds = [];
-              let collectionsPerArray = [];
-              const numberOfEmbeds = Math.ceil(newCollections.length / 30);
-              const floorEmbeds = await switchIt(numberOfEmbeds, newCollections);
-              const floorMessage = await channel.messages.fetch(messages[0]);
-              if (floorEmbeds.length === 1) {
-                await floorMessage.edit({
-                  embeds: [floorEmbeds[0]],
+                const ercMessage = await client.channels.fetch(interaction.guild.id).messages.fetch(messages[3]);
+                ercMessage.edit({
+                  embeds: [ercEmbed],
                   content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
                   components: null,
-                });
-              } else {
-                await floorMessage.edit({
-                  embeds: [floorEmbeds[0]],
-                  content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
-                  components: [row_left],
-                });
-                let counter = 0;
-                const collector = floorMessage.createMessageComponentCollector({
-                  componentType: 'BUTTON',
-                  idle: 120000
-                });
-                collector.on("collect", async (i) => {
-                  await i.deferUpdate();
-                  if (counter === 0 && i.customId === "left") return;
-                  if (counter === floorEmbeds.length - 1 && i.customId === "right") return;
-                  if (i.customId === "right") {
-                    ++counter;
-                    let xdRow = counter === floorEmbeds.length - 1 ? row_right : row_middle;
-                    await floorMessage.edit({
-                      embeds: [floorEmbeds[counter]],
-                      components: [xdRow],
-                    });
-                  } else if (i.customId === "left") {
-                    --counter
-                    let xdRow = counter === 0 ? row_left : row_middle;
-                    await floorMessage.edit({
-                      embeds: [floorEmbeds[counter]],
-                      components: [xdRow],
-                    });
-                  }
-                });
-                collector.on("end", async (collected) => {
-                  await floorMessage.edit({
-                    components: null,
-                  }).catch((e) => { });
-                  return;
-                });
+                }).catch((e) => { });
               };
-              const eth_nft = nft_worth.toFixed(4);
-              const totalEth = Number(Number(liquid_eth) + Number(eth_nft)).toFixed(4);
-              const totalEthUSD = (totalEth * ether_usd_price).toFixed(2);
-              const portFolioDescription = `:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth * ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft * ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
-              const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`, null, portFolioDescription);
-              const portfolioMessage = await channel.messages.fetch(messages[2]);
+            } else {
+              if (!dm) {
+                const ercChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[3]);
+                if (!ercChannel) return interaction.channel.send({
+                  content: "The ERC-20 channel was not found. Please \`/config\` again.",
+                });
+                const ercMessage = await ercChannel.messages.fetch(messages[3]);
+                if (!ercMessage) return interaction.channel.send({
+                  content: "The ERC-20 message was not found. Please \`/config\` again.",
+                });
+                ercMessage.edit({
+                  content: `NO ERC-20 TOKENS FOUND`,
+                  embeds: null,
+                  components: [row],
+                }).catch((e) => { });
+              } else {
+                const ercMessage = await client.channels.fetch(interaction.guild.id).messages.fetch(messages[3]);
+                ercMessage.edit({
+                  content: `NO ERC-20 TOKENS FOUND`,
+                  embeds: null,
+                  components: null,
+                }).catch((e) => { });
+              }
+            };
+            ErcWorthEth = ercWorthUSD / ether_usd_price;
+
+            ////////////// PORTFOLIO HANDLING //////////////
+
+            const totalEth = Number(Number(liquid_eth) + Number(eth_nft) + Number(ErcWorthEth)).toFixed(4);
+            const totalEthUSD = (totalEth * ether_usd_price).toFixed(2);
+            const portFolioDescription = `:white_medium_small_square: **LIQUID**\n:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **NFT(S)**\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **ERC-20 TOKEN(S)**\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ ETH ] : Ξ ${ErcWorthEth.toFixed(4)}\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ USD ] : $ ${ercWorthUSD.toFixed(2)}\n\n:white_medium_small_square: **OVERALL**\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
+            const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`, null, portFolioDescription);
+            if (!dm) {
+              const portfolioChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[2])
+              if (!portfolioChannel) return interaction.channel.send({
+                content: "The portfolio channel was not found. Please \`/config\` again.",
+              });
+              const portfolioMessage = await portfolioChannel.messages.fetch(messages[2]);
+              if (!portfolioMessage) return interaction.channel.send({
+                content: "The portfolio message was not found. Please \`/config\` again.",
+              });
               await portfolioMessage.edit({
                 embeds: [portFolioEmbed],
                 content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
                 components: [row],
-              });
-              await sentxd.delete().catch((e) => { });
-            });
+              }).catch((e) => { });
+              await loading.delete().catch(() => { });
+            } else {
+              const portfolioMessage = await client.channels.fetch(interaction.channelId).messages.fetch(messages[2]);
+              await portfolioMessage.edit({
+                embeds: [portFolioEmbed],
+                content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
+                components: [row],
+              }).catch((e) => { });
+              await loading.delete().catch(() => { });
+            };
+          });
+        });
+      } else {
+        if (!dm) {
+          const floorChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[0]);
+          if (!floorChannel) return interaction.channel.send({
+            content: "The floors channel was not found. Please \`/config\` again.",
+          });
+          const floorMessage = await floorChannel.messages.fetch(messages[0]);
+          if (!floorMessage) return interaction.channel.send({
+            content: "The floors message was not found. Please \`/config\` again.",
+          });
+          floorMessage.edit({
+            content: "NO NFTS FOUND",
+            embeds: null,
+            components: [row],
+          }).catch((e) => { });
+        } else {
+          const floorMessage = await client.channels.fetch(interaction.channelId).messages.fetch(messages[0]);
+          floorMessage.edit({
+            content: "NO NFTS FOUND",
+            embeds: null,
+            components: null,
+          }).catch((e) => { });
+        };
+
+        /////////////// ERC 20 OPERATIONS ///////////////
+
+        let ercResponses = [];
+        let ercWorthUSD = 0;
+        wallets.forEach(async (wallet) => {
+          let ercResponse = "";
+          const url = `https://api.covalenthq.com/v1/1/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=${process.env['covalent_key']}`;
+          do {
+            ercResponse = await getUrlCovalent(url);
+          } while (!ercResponse || !ercResponse?.data?.items)
+          const tokens = ercResponse.data.items;
+          if (tokens.length) {
+            const balances = tokens.map((e) => [e.contract_name, e.contract_ticker_symbol, e.quote_rate ? e.quote_rate.toFixed(4) : 0, (Number(e.balance) / Math.pow(10, e.contract_decimals)).toFixed(4), e.quote ? e.quote.toFixed(2) : 0]);
+            ercResponses.push(balances);
           } else {
-            const floorMessage = await channel.messages.fetch(messages[0]);
-            await floorMessage.edit({
-              content: "No NFT available on provided wallets",
+            const balances = [];
+            ercResponses.push(balances);
+          }
+          if (ercResponses.length !== wallets.length) return;
+          let ercFinal = ercProcess(ercResponses);
+          if (ercFinal.length) {
+            ercWorthUSD = ercWorth(ercFinal);
+            if (ercFinal.length > 40) ercFinal = ercFinal.slice(0, 40);
+            const ercDescription = ercDescriptionGenerator(ercFinal);
+            const ercEmbed = embedGenerator(`${usertag}\'s ERC-20 Tokens`, null, ercDescription);
+            if (!dm) {
+              const ercChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[3]);
+              if (!ercChannel) return interaction.channel.send({
+                content: "The ERC-20 channel was not found. Please \`/config\` again.",
+              });
+              const ercMessage = await ercChannel.messages.fetch(messages[3]);
+              if (!ercMessage) return interaction.channel.send({
+                content: "The ERC-20 message was not found. Please \`/config\` again.",
+              });
+              ercMessage.edit({
+                embeds: [ercEmbed],
+                content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
+                components: [row],
+              }).catch((e) => { });
+            } else {
+              const ercMessage = await client.channels.fetch(interaction.guild.id).messages.fetch(messages[3]);
+              ercMessage.edit({
+                embeds: [ercEmbed],
+                content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
+                components: null,
+              }).catch((e) => { });
+            };
+          } else {
+            if (!dm) {
+              const ercChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[3]);
+              if (!ercChannel) return interaction.channel.send({
+                content: "The ERC-20 channel was not found. Please \`/config\` again.",
+              });
+              const ercMessage = await ercChannel.messages.fetch(messages[3]);
+              if (!ercMessage) return interaction.channel.send({
+                content: "The ERC-20 message was not found. Please \`/config\` again.",
+              });
+              ercMessage.edit({
+                content: `NO ERC-20 TOKENS FOUND`,
+                embeds: null,
+                components: [row],
+              }).catch((e) => { });
+            } else {
+              const ercMessage = await client.channels.fetch(interaction.guild.id).messages.fetch(messages[3]);
+              ercMessage.edit({
+                content: `NO ERC-20 TOKENS FOUND`,
+                embeds: null,
+                components: null,
+              }).catch((e) => { });
+            }
+          };
+          ErcWorthEth = ercWorthUSD / ether_usd_price;
+
+          ////////////// PORTFOLIO HANDLING //////////////
+          
+          const totalEth = Number(Number(liquid_eth) + Number(eth_nft) + Number(ErcWorthEth)).toFixed(4);
+          const totalEthUSD = (totalEth * ether_usd_price).toFixed(2);
+          const portFolioDescription = `:white_medium_small_square: **LIQUID**\n:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **NFT(S)**\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **ERC-20 TOKEN(S)**\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ ETH ] : Ξ ${ErcWorthEth.toFixed(4)}\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ USD ] : $ ${ercWorthUSD.toFixed(2)}\n\n:white_medium_small_square: **OVERALL**\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
+          const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`, null, portFolioDescription);
+          if (!dm) {
+            const portfolioChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[2])
+            if (!portfolioChannel) return interaction.channel.send({
+              content: "The portfolio channel was not found. Please \`/config\` again.",
             });
-            const eth_nft = 0;
-            const totalEth = Number(Number(liquid_eth) + Number(eth_nft)).toFixed(4);
-            const totalEthUSD = (totalEth * ether_usd_price).toFixed(2);
-            const portFolioDescription = `:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth * ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft * ether_usd_price).toFixed(2)}\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
-            const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`, null, portFolioDescription);
-            const portfolioMessage = await channel.messages.fetch(messages[2]);
+            const portfolioMessage = await portfolioChannel.messages.fetch(messages[2]);
+            if (!portfolioMessage) return interaction.channel.send({
+              content: "The portfolio message was not found. Please \`/config\` again.",
+            });
             await portfolioMessage.edit({
               embeds: [portFolioEmbed],
               content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
               components: [row],
-            });
-            await sentxd.delete().catch((e) => { });
-          }
-        }
-      });
+            }).catch((e) => { });
+            await loading.delete().catch(() => { });
+          } else {
+            const portfolioMessage = await client.channels.fetch(interaction.channelId).messages.fetch(messages[2]);
+            await portfolioMessage.edit({
+              embeds: [portFolioEmbed],
+              content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
+              components: [row],
+            }).catch((e) => { });
+            await loading.delete().catch(() => { });
+          };
+        });
+      };
     } catch (e) {
       console.log(e);
       if (interaction.deferred) {
@@ -572,7 +752,7 @@ module.exports = {
           components: null,
         });
       };
-      client.users.cache.get("727498137232736306").send(`Bobot has trouble refresh.js -\n\n${e}`);
+      client.users.cache.get("727498137232736306").send(`Bobot has trouble in refresh.js -\n\n${e}`);
     };
   }
 }
