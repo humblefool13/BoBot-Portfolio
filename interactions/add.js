@@ -111,7 +111,7 @@ module.exports = {
           components: null,
         });
       };
-      client.users.cache.get("727498137232736306").send(`Bobot has trouble add.js -\n\n${e}`);
+      client.users.cache.get("727498137232736306").send(`Bobot has trouble in add.js -\n\n${e}`);
     };
   }
 }
