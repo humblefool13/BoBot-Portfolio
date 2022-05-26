@@ -111,6 +111,7 @@ function ercProcess(arr) {
   let arrFinal = [];
   arr.forEach((balances) => {
     balances.forEach((e) => {
+      if(Number(e[3])===0) return;
       if (e[0] === "Ether") return;
       const symbol = e[1];
       const find = arrFinal.find((el) => el[1] === symbol);
@@ -579,7 +580,7 @@ module.exports = {
 
             const totalEth = Number(Number(liquid_eth) + Number(eth_nft) + Number(ErcWorthEth)).toFixed(4);
             const totalEthUSD = (totalEth * ether_usd_price).toFixed(2);
-            const portFolioDescription = `:white_medium_small_square: **LIQUID**\n:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **NFT(S)**\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **ERC-20 TOKEN(S)**\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ ETH ] : Ξ ${ErcWorthEth.toFixed(4)}\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ USD ] : $ ${ercWorthUSD.toFixed(2)}\n\n:white_medium_small_square: **OVERALL**\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
+            const portFolioDescription = `:white_medium_small_square: **LIQUID**\n:white_small_square: TOTAL LIQUID ETH : Ξ ${Number(liquid_eth).toFixed(4)}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(Number(liquid_eth) * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **NFT(S)**\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${Number(eth_nft).toFixed(4)}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(Number(eth_nft) * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **ERC-20 TOKEN(S)**\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ ETH ] : Ξ ${Number(ErcWorthEth).toFixed(4)}\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ USD ] : $ ${Number(ercWorthUSD).toFixed(2)}\n\n:white_medium_small_square: **OVERALL**\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
             const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`, null, portFolioDescription);
             if (!dm) {
               const portfolioChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[2]);
@@ -708,7 +709,7 @@ module.exports = {
 
           const totalEth = Number(Number(liquid_eth) + Number(eth_nft) + Number(ErcWorthEth)).toFixed(4);
           const totalEthUSD = (totalEth * ether_usd_price).toFixed(2);
-          const portFolioDescription = `:white_medium_small_square: **LIQUID**\n:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **NFT(S)**\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **ERC-20 TOKEN(S)**\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ ETH ] : Ξ ${ErcWorthEth.toFixed(4)}\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ USD ] : $ ${ercWorthUSD.toFixed(2)}\n\n:white_medium_small_square: **OVERALL**\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
+          const portFolioDescription = `:white_medium_small_square: **LIQUID**\n:white_small_square: TOTAL LIQUID ETH : Ξ ${Number(liquid_eth).toFixed(4)}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(Number(liquid_eth) * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **NFT(S)**\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${Number(eth_nft).toFixed(4)}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(Number(eth_nft) * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **ERC-20 TOKEN(S)**\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ ETH ] : Ξ ${Number(ErcWorthEth).toFixed(4)}\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ USD ] : $ ${Number(ercWorthUSD).toFixed(2)}\n\n:white_medium_small_square: **OVERALL**\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
           const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`, null, portFolioDescription);
           if (!dm) {
             const portfolioChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[2]);

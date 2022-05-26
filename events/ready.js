@@ -6,7 +6,7 @@ module.exports = {
   name: 'ready',
   once: true,
   async execute(client) {
-    console.log("Bot is on");
+    console.log("!!!!! BOBOT IS ON !!!!!");
     async function configFilter() {
       const subs = await sub_records.find();
       subs.forEach(async (sub) => {
