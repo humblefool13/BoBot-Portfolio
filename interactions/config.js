@@ -35,10 +35,10 @@ module.exports = {
       });
       if (dm) {
         sendDm = await interaction.user.send("Testing If I can DM you.").catch((e) => {
-          sendDM = "e";
+          sendDm = "e";
           interaction.editReply({ content: "I cannot DM you , Please check your privacy settings.\n\nNote : This is a slash command reply , this doesn't mean that I can message you , slash command reply ≠ message .", ephemeral: true });
         });
-        if (sendDM === "e") return;
+        if (sendDm === "e") return;
       };
       let nft_wallets = [];
       let wallets = [];

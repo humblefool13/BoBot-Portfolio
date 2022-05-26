@@ -142,70 +142,88 @@ function ercDescriptionGenerator(arr) {
   description = description + "```";
   return description;
 };
-
-////////////// ASYNC FUNCTIONS //////////////
-
-async function switchIt(n, newCollections) {
+function concatenateArrays(arr1, arr2) {
+  let array = [];
+  arr1.forEach((e) => {
+    const find = arr2.find(el => el[0] === e[0]);
+    if (!find) {
+      array.push(e);
+    } else {
+      const number_1 = e[2];
+      const number_2 = find[2];
+      const total = number_1 + number_2;
+      array.push([e[0], e[1], total]);
+    };
+  });
+  arr2.forEach((e) => {
+    const find = array.find(el => el[0] === e[0]);
+    if (!find) {
+      array.push(e);
+    };
+  });
+  return array;
+};
+function switchIt(n, newCollections) {
   let embeds = [];
   switch (n) {
     case 1:
       collectionsPerArray = newCollections;
-      const description = await descriptionGenerator(collectionsPerArray);
-      const embed = await embedGenerator("Floor Prices of Collections Owned", null, description);
+      const description = descriptionGenerator(collectionsPerArray);
+      const embed = embedGenerator("Floor Prices of Collections Owned", null, description);
       embeds.push(embed);
       break;
     case 2:
-      collectionsPerArray = await arraySplitter(newCollections, 2);
-      collectionsPerArray.forEach(async (collect) => {
-        const description = await descriptionGenerator(collect);
-        const embed = await embedGenerator("Floor Prices of Collections Owned", null, description);
+      collectionsPerArray = arraySplitter(newCollections, 2);
+      collectionsPerArray.forEach((collect) => {
+        const description = descriptionGenerator(collect);
+        const embed = embedGenerator("Floor Prices of Collections Owned", null, description);
         embeds.push(embed);
       });
       break;
     case 3:
       collectionsPerArray = arraySplitter(newCollections, 3);
-      collectionsPerArray.forEach(async (collect) => {
-        const description = await descriptionGenerator(collect);
-        const embed = await embedGenerator("Floor Prices of Collections Owned", null, description);
+      collectionsPerArray.forEach((collect) => {
+        const description = descriptionGenerator(collect);
+        const embed = embedGenerator("Floor Prices of Collections Owned", null, description);
         embeds.push(embed);
       });
       break;
     case 4:
       collectionsPerArray = arraySplitter(newCollections, 4);
-      collectionsPerArray.forEach(async (collect) => {
-        const description = await descriptionGenerator(collect);
-        const embed = await embedGenerator("Floor Prices of Collections Owned", null, description);
+      collectionsPerArray.forEach((collect) => {
+        const description = descriptionGenerator(collect);
+        const embed = embedGenerator("Floor Prices of Collections Owned", null, description);
         embeds.push(embed);
       });
       break;
     case 5:
       collectionsPerArray = arraySplitter(newCollections, 5);
-      collectionsPerArray.forEach(async (collect) => {
-        const description = await descriptionGenerator(collect);
-        const embed = await embedGenerator("Floor Prices of Collections Owned", null, description);
+      collectionsPerArray.forEach((collect) => {
+        const description = descriptionGenerator(collect);
+        const embed = embedGenerator("Floor Prices of Collections Owned", null, description);
         embeds.push(embed);
       });
       break;
     case 6:
       collectionsPerArray = arraySplitter(newCollections, 6);
-      collectionsPerArray.forEach(async (collect) => {
-        const description = await descriptionGenerator(collect);
-        const embed = await embedGenerator("Floor Prices of Collections Owned", null, description);
+      collectionsPerArray.forEach((collect) => {
+        const description = descriptionGenerator(collect);
+        const embed = embedGenerator("Floor Prices of Collections Owned", null, description);
         embeds.push(embed);
       });
       break;
     case 7:
       collectionsPerArray = arraySplitter(newCollections, 7);
-      collectionsPerArray.forEach(async (collect) => {
-        const description = await descriptionGenerator(collect);
-        const embed = await embedGenerator("Floor Prices of Collections Owned", null, description);
+      collectionsPerArray.forEach((collect) => {
+        const description = descriptionGenerator(collect);
+        const embed = embedGenerator("Floor Prices of Collections Owned", null, description);
         embeds.push(embed);
       });
       break;
     case 8:
       collectionsPerArray = arraySplitter(newCollections, 8);
-      collectionsPerArray.forEach(async (collect) => {
-        const description = await descriptionGenerator(collect);
+      collectionsPerArray.forEach((collect) => {
+        const description = descriptionGenerator(collect);
         const embed = awaembedGenerator("Floor Prices of Collections Owned", null, description);
         embeds.push(embed);
       });
@@ -231,6 +249,9 @@ async function switchIt(n, newCollections) {
   };
   return embeds;
 };
+
+////////////// ASYNC FUNCTIONS //////////////
+
 async function getCollections(wallet) {
   let collectionsxd = [];
   let collections_owned = [];
@@ -251,27 +272,6 @@ async function getCollections(wallet) {
     };
   });
   return collectionsxd;
-};
-async function concatenateArrays(arr1, arr2) {
-  let array = [];
-  arr1.forEach(async (e) => {
-    const find = await arr2.find(el => el[0] === e[0]);
-    if (!find) {
-      array.push(e);
-    } else {
-      const number_1 = e[2];
-      const number_2 = find[2];
-      const total = number_1 + number_2;
-      array.push([e[0], e[1], total]);
-    };
-  });
-  arr2.forEach(async (e) => {
-    const find = await array.find(el => el[0] === e[0]);
-    if (!find) {
-      array.push(e);
-    };
-  });
-  return array;
 };
 async function getEther(stra) {
   const remainingRequests = await limiter_eth.removeTokens(1);
@@ -307,7 +307,6 @@ async function getUrlCovalent(url) {
   const result = await response.json();
   return result;
 };
-
 
 module.exports = {
   name: "refresh",
@@ -384,7 +383,7 @@ module.exports = {
       if (nft_wallets.length === 2) {
         collections_2 = await getCollections(nft_wallets[1]);
       };
-      const collections = await concatenateArrays(collections_1, collections_2);
+      const collections = concatenateArrays(collections_1, collections_2);
       if (collections.length) {
         let newCollections = [];
         collections.forEach(async (collection) => {
@@ -400,7 +399,7 @@ module.exports = {
           nft_worth = nft_worth + Number((floor * collection[2]).toFixed(4));
           if (collections.length !== newCollections.length) return;
           const numberOfEmbeds = Math.ceil(newCollections.length / 30);
-          const floorEmbeds = await switchIt(numberOfEmbeds, newCollections);
+          const floorEmbeds = switchIt(numberOfEmbeds, newCollections);
           if (!dm) {
             const floorChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[0]);
             if (!floorChannel) return interaction.channel.send({
@@ -706,7 +705,7 @@ module.exports = {
           ErcWorthEth = ercWorthUSD / ether_usd_price;
 
           ////////////// PORTFOLIO HANDLING //////////////
-          
+
           const totalEth = Number(Number(liquid_eth) + Number(eth_nft) + Number(ErcWorthEth)).toFixed(4);
           const totalEthUSD = (totalEth * ether_usd_price).toFixed(2);
           const portFolioDescription = `:white_medium_small_square: **LIQUID**\n:white_small_square: TOTAL LIQUID ETH : Ξ ${liquid_eth}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(liquid_eth * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **NFT(S)**\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${eth_nft}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(eth_nft * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **ERC-20 TOKEN(S)**\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ ETH ] : Ξ ${ErcWorthEth.toFixed(4)}\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ USD ] : $ ${ercWorthUSD.toFixed(2)}\n\n:white_medium_small_square: **OVERALL**\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
