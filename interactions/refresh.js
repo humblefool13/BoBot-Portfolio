@@ -358,7 +358,7 @@ module.exports = {
         walletMessage.edit({
           embeds: [walletEmbed],
           content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
-          components: null,
+          components: [],
         }).catch((e) => { });
       } else {
         const walletChannel = await client.guilds.cache.get(interaction.guild.id).channels.fetch(channels[1]);
@@ -459,7 +459,7 @@ module.exports = {
             if (floorEmbeds.length === 1) {
               await floorMessage.edit({
                 embeds: [floorEmbeds[0]],
-                components: null,
+                components: [],
                 content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
               }).catch((e) => { });
             } else {
@@ -495,7 +495,7 @@ module.exports = {
               });
               collector.on("end", async (collected) => {
                 await floorMessage.edit({
-                  components: null,
+                  components: [],
                 }).catch((e) => { });
                 return;
               });
@@ -547,7 +547,7 @@ module.exports = {
                 ercMessage.edit({
                   embeds: [ercEmbed],
                   content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
-                  components: null,
+                  components: [],
                 }).catch((e) => { });
               };
             } else {
@@ -562,15 +562,15 @@ module.exports = {
                 });
                 ercMessage.edit({
                   content: `NO ERC-20 TOKENS FOUND`,
-                  embeds: null,
+                  embeds: [],
                   components: [row],
                 }).catch((e) => { });
               } else {
                 const ercMessage = await channel.messages.fetch(messages[3]);
                 ercMessage.edit({
                   content: `NO ERC-20 TOKENS FOUND`,
-                  embeds: null,
-                  components: null,
+                  embeds: [],
+                  components: [],
                 }).catch((e) => { });
               }
             };
@@ -620,15 +620,15 @@ module.exports = {
           });
           floorMessage.edit({
             content: "NO NFTS FOUND",
-            embeds: null,
+            embeds: [],
             components: [row],
           }).catch((e) => { });
         } else {
           const floorMessage = await channel.messages.fetch(messages[0]);
           floorMessage.edit({
             content: "NO NFTS FOUND",
-            embeds: null,
-            components: null,
+            embeds: [],
+            components: [],
           }).catch((e) => { });
         };
 
@@ -676,7 +676,7 @@ module.exports = {
               ercMessage.edit({
                 embeds: [ercEmbed],
                 content: `Last Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
-                components: null,
+                components: [],
               }).catch((e) => { });
             };
           } else {
@@ -691,15 +691,15 @@ module.exports = {
               });
               ercMessage.edit({
                 content: `NO ERC-20 TOKENS FOUND`,
-                embeds: null,
+                embeds: [],
                 components: [row],
               }).catch((e) => { });
             } else {
               const ercMessage = await channel.messages.fetch(messages[3]);
               ercMessage.edit({
                 content: `NO ERC-20 TOKENS FOUND`,
-                embeds: null,
-                components: null,
+                embeds: [],
+                components: [],
               }).catch((e) => { });
             }
           };
