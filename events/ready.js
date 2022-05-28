@@ -59,7 +59,7 @@ module.exports = {
         }).catch((e) => {
           console.log(e);
         });
-        if (config) editEndMsg(config, client).catch((e)=>{});
+        if (config) editEndMsg(config, client).catch((e) => { });
         await config_records.deleteOne({
           discord_id: sub.discord_id,
         }).catch((e) => {

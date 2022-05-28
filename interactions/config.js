@@ -149,6 +149,7 @@ module.exports = {
         });
         await new config_records({
           discord_id: interaction.user.id,
+          guild_id: interaction.guild.id,
           nft_wallets: nft_wallets,
           dm: false,
           wallets: wallets,
@@ -183,6 +184,7 @@ module.exports = {
         });
         await new config_records({
           discord_id: interaction.user.id,
+          guild_id: "NA",
           nft_wallets: nft_wallets,
           dm: true,
           wallets: wallets,
