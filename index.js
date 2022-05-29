@@ -18,4 +18,21 @@ require('./databases/freeTrials')();
 require('./databases/configRecords')();
 require('./databases/subscriptionRecords')();
 
+process.on("unhandledRejection", (reason, p) => {
+  console.log('[ ANTICRASH ] :: Unhandled Rejection / Catch');
+  console.log(reason?.stack, p);
+});
+process.on("uncaughtException", (err, origin) => {
+  console.log('[ ANTICRASH ] :: Uncaught Exception / Catch');
+  console.log(err?.stack, origin);
+});
+process.on("uncaughtExceptionMonitor", (err, origin) => {
+  console.log('[ ANTICRASH ] :: Uncaught Exception / Catch { MONITOR }');
+  console.log(err?.stack, origin);
+});
+process.on("multipleResolves", (type, promise, reason) => {
+  console.log('[ ANTICRASH ] :: Multiple Resolves');
+  console.log(type?.stack, promise, reason);
+});
+
 client.login(process.env['bot_token']);
