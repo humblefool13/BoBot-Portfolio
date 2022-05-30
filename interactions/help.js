@@ -157,7 +157,7 @@ module.exports = {
         };
       });
       collector.on("end", async (collected) => {
-        await interaction.editReply({,
+        await interaction.editReply({
           ephemeral: true,
           components: [dead_buttons],
         }).catch((e) => { });
