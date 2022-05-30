@@ -11,6 +11,7 @@ module.exports = {
   name: "add",
   async interact(client, interaction) {
     try {
+      await interaction.deferReply();
       if (!interaction.member.roles.cache.has("969173759581904946")) return interaction.reply({
         content: "This command isn't for you.\n\nOnly <@&969173759581904946> can use this command.",
         ephemeral: true
@@ -23,7 +24,6 @@ module.exports = {
       });
       const weeks = interaction.options.getInteger('weeks');
       const free = interaction.options.getBoolean('free');
-      await interaction.deferReply();
       if (free) {
         const find = await free_users.findOne({
           discord_id: userid,
@@ -102,11 +102,13 @@ module.exports = {
         await interaction.editReply({
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
           embeds: null,
+          ephemeral: true,
           components: null,
         });
       } else {
         await interaction.reply({
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
+          ephemeral: true,
           embeds: null,
           components: null,
         });

@@ -171,6 +171,7 @@ module.exports = {
       .setColor("#454be9");
     interaction.reply({
       embeds: [embed],
+      ephemeral: true,
     });
   }
 }

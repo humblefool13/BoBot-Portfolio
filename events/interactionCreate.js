@@ -28,7 +28,7 @@ module.exports = {
             const timeLeft = parseInt(expirationTime / 1000);
             return interaction.reply({
               content: `Please wait till - <t:${timeLeft}:R> before reusing the \`${command.name}\` command.`,
-              ephemeral : true,
+              ephemeral: true,
             });
           };
         };

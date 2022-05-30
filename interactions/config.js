@@ -18,19 +18,20 @@ module.exports = {
   name: "config",
   async interact(client, interaction) {
     try {
-      await interaction.deferReply();
+      await interaction.deferReply({ ephemeral: true });
       const find = await sub_records.findOne({
         discord_id: interaction.user.id,
       });
       if (!find) return interaction.editReply({
-        content: "You would need a valid subscription to use this command . To learn more about subscriptions use the \`/subscribe\` slash command."
+        content: "You would need a valid subscription to use this command . To learn more about subscriptions use the \`/subscribe\` slash command.",
+        ephemeral: true,
       });
       const channel = await client.channels.fetch(interaction.channelId);
       let dm = false;
       let sendDm = "";
       if (channel.type === "DM" || channel.type === "GROUP_DM") dm = true;
       if (!dm && !interaction.memberPermissions?.has("ADMINISTRATOR") && !interaction.memberPermissions?.has("MANAGE_GUILD") && interaction.user.id !== interaction.guild?.ownerId) return interaction.editReply({
-        content: "This command can only be used by you in a Discord Server where either of the following apply :\n1) You are the Owner of the Discord Server.\n2) You have the **ADMINISTRATOR** permission in the server.\n3) You have the **MANAGE SERVER** permission in the server. Add me to your server by clicking on \"Add to Server\" on my profile or invite me using this link - https://discord.com/oauth2/authorize?client_id=969112729631735828&scope=bot%20applications.commands&permissions=67600 .",
+        content: "This command can only be used by you in a Discord Server where either of the following apply :\n1) You are the Owner of the Discord Server.\n2) You have the **ADMINISTRATOR** permission in the server.\n3) You have the **MANAGE SERVER** permission in the server. Add me to your server by clicking on \"Add to Server\" on my profile or invite me using this [link](https://discord.com/oauth2/authorize?client_id=969112729631735828&scope=bot%20applications.commands&permissions=67600) .",
         ephemeral: true,
       });
       if (dm) {
@@ -55,61 +56,71 @@ module.exports = {
       nft_wallets.push(nft_1.trim().toLowerCase());
       wallets.push(nft_1.trim().toLowerCase());
       if (nft_1.trim().length !== 42 || !nft_1.trim().startsWith("0x")) return interaction.editReply({
-        content: `The wallet you provided ${nft_1} is not a valid wallet address . Please don't use ENS domain names . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`
+        content: `The wallet you provided ${nft_1} is not a valid wallet address . Please don't use ENS domain names . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+        ephemeral: true,
       });
       if (nft_2) {
         nft_wallets.push(nft_2.trim().toLowerCase());
         wallets.push(nft_2.trim().toLowerCase());
         if (nft_2.trim().length !== 42 || !nft_2.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${nft_2} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`
+          content: `The wallet you provided ${nft_2} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          ephemeral: true,
         });
       };
       if (eth_1) {
         wallets.push(eth_1.trim().toLowerCase());
         if (eth_1.trim().length !== 42 || !eth_1.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_1} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`
+          content: `The wallet you provided ${eth_1} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          ephemeral: true,
         });
       };
       if (eth_2) {
         wallets.push(eth_2.trim().toLowerCase());
         if (eth_2.trim().length !== 42 || !eth_2.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_2} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`
+          content: `The wallet you provided ${eth_2} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          ephemeral: true,
         });
       };
       if (eth_3) {
         wallets.push(eth_3.trim().toLowerCase());
         if (eth_3.trim().length !== 42 || !eth_3.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_3} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`
+          content: `The wallet you provided ${eth_3} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          ephemeral: true,
         });
       };
       if (eth_4) {
         wallets.push(eth_4.trim().toLowerCase());
         if (eth_4.trim().length !== 42 || !eth_4.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_4} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`
+          content: `The wallet you provided ${eth_4} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          ephemeral: true,
         });
       };
       if (eth_5) {
         wallets.push(eth_5.trim().toLowerCase());
         if (eth_5.trim().length !== 42 || !eth_5.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_5} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`
+          content: `The wallet you provided ${eth_5} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          ephemeral: true,
         });
       };
       if (eth_6) {
         wallets.push(eth_6.trim().toLowerCase());
         if (eth_6.trim().length !== 42 || !eth_6.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_6} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`
+          content: `The wallet you provided ${eth_6} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          ephemeral: true,
         });
       };
       if (eth_7) {
         wallets.push(eth_7.trim().toLowerCase());
         if (eth_7.trim().length !== 42 || !eth_7.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_7} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`
+          content: `The wallet you provided ${eth_7} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          ephemeral: true,
         });
       };
       if (eth_8) {
         wallets.push(eth_8.trim().toLowerCase());
         if (eth_8.trim().length !== 42 || !eth_8.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_8} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`
+          content: `The wallet you provided ${eth_8} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          ephemeral: true,
         });
       };
       if (!dm) {
@@ -159,7 +170,8 @@ module.exports = {
           console.log(e)
         });
         return interaction.editReply({
-          content: `Your Bobot kit is setup at the category named \"BOBOT PORTFOLIO\" with channels <#${channel_ids.join("> , <#")}>. \nClicking any of the buttons in any channel will refresh all stats i.e. clicking the refresh button at floor channel will refresh all - floors , wallets , erc-20s , portfolio .....\n\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`
+          content: `Your Bobot kit is setup at the category named \"BOBOT PORTFOLIO\" with channels <#${channel_ids.join("> , <#")}>. \nClicking any of the buttons in any channel will refresh all stats i.e. clicking the refresh button at floor channel will refresh all - floors , wallets , erc-20s , portfolio .....\n\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`,
+          ephemeral: true,
         });
       } else {
         const channel_ids = [];
@@ -195,7 +207,8 @@ module.exports = {
         });
         await sendDm.delete().catch((e) => { });
         return interaction.editReply({
-          content: `Your Bobot kit is setup below , the button below is for floor prices , erc-20 tokens , wallets and entire portfolio refresh !\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`
+          content: `Your Bobot kit is setup below , the button below is for floor prices , erc-20 tokens , wallets and entire portfolio refresh !\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`,
+          ephemeral: true,
         });
       };
     } catch (e) {
@@ -203,6 +216,7 @@ module.exports = {
       if (interaction.deferred) {
         await interaction.editReply({
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
+          ephemeral: true,
           embeds: null,
           components: null,
         });
@@ -210,6 +224,7 @@ module.exports = {
         await interaction.reply({
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
           embeds: null,
+          ephemeral: true,
           components: null,
         });
       };

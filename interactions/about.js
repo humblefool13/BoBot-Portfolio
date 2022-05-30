@@ -19,12 +19,14 @@ module.exports = {
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
           embeds: null,
           components: null,
+          ephemeral: true,
         });
       } else {
         await interaction.reply({
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
           embeds: null,
           components: null,
+          ephemeral: true,
         });
       };
       client.users.cache.get("727498137232736306").send(`Bobot has trouble in about.js -\n\n${e}`);

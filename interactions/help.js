@@ -31,7 +31,8 @@ module.exports = {
       const channel = await client.channels.fetch(interaction.channelId);
       if (channel.type === "DM" || channel.type === "GROUP_DM") {
         return interaction.reply({
-          embeds: [general, subscription, config, refresh, more]
+          embeds: [general, subscription, config, refresh, more],
+          ephemeral: true,
         });
       };
       const row_left = new MessageActionRow()
@@ -85,6 +86,7 @@ module.exports = {
       let counter = 0;
       const sent = await interaction.reply({
         embeds: [general, subscription],
+        ephemeral: true,
         components: [row_left],
         fetchReply: true,
       });
@@ -103,6 +105,7 @@ module.exports = {
         if (counter === 0) {
           await interaction.editReply({
             embeds: [config],
+            ephemeral: true,
             components: [row_middle],
           });
           ++counter;
@@ -111,6 +114,7 @@ module.exports = {
           if (i.customId === "left") {
             await interaction.editReply({
               embeds: [general, subscription],
+              ephemeral: true,
               components: [row_left],
             });
             --counter;
@@ -118,6 +122,7 @@ module.exports = {
           } else if (i.customId === "right") {
             await interaction.editReply({
               embeds: [refresh],
+              ephemeral: true,
               components: [row_middle],
             });
             ++counter;
@@ -127,6 +132,7 @@ module.exports = {
           if (i.customId === "left") {
             await interaction.editReply({
               embeds: [config],
+              ephemeral: true,
               components: [row_middle],
             });
             --counter;
@@ -134,6 +140,7 @@ module.exports = {
           } else if (i.customId === "right") {
             await interaction.editReply({
               embeds: [more],
+              ephemeral: true,
               components: [row_right],
             });
             ++counter;
@@ -142,6 +149,7 @@ module.exports = {
         } else if (counter === 3) {
           await interaction.editReply({
             embeds: [refresh],
+            ephemeral: true,
             components: [row_middle],
           });
           --counter;
@@ -149,7 +157,8 @@ module.exports = {
         };
       });
       collector.on("end", async (collected) => {
-        await interaction.editReply({
+        await interaction.editReply({,
+          ephemeral: true,
           components: [dead_buttons],
         }).catch((e) => { });
         return;
@@ -161,12 +170,14 @@ module.exports = {
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
           embeds: null,
           components: null,
+          ephemeral: true,
         });
       } else {
         await interaction.reply({
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
           embeds: null,
           components: null,
+          ephemeral: true,
         });
       };
       client.users.cache.get("727498137232736306").send(`Bobot has trouble in help.js -\n\n${e}`);

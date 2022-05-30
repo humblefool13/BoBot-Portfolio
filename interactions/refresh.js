@@ -363,13 +363,15 @@ module.exports = {
           components: [],
         }).catch((e) => { });
       } else {
-        const walletChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[1]).catch((e)=>{});
-        if (!walletChannel) return interaction.channel.send({
-          content: "The wallets channel was not found. Please \`/config\` again."
+        const walletChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[1]).catch((e) => { });
+        if (!walletChannel) return interaction.followUp({
+          content: "The wallets channel was not found. Please \`/config\` again.",
+          ephemeral: true,
         }).then(await loading.delete().catch(() => { }));
-        const walletMessage = await walletChannel.messages.fetch(messages[1]);
-        if (!walletMessage) return interaction.channel.send({
-          content: "The wallets message was not found. Please \`/config\` again."
+        const walletMessage = await walletChannel.messages.fetch(messages[1]).catch((e) => { });
+        if (!walletMessage) return interaction.followUp({
+          content: "The wallets message was not found. Please \`/config\` again.",
+          ephemeral: true,
         }).then(await loading.delete().catch(() => { }));
         walletMessage.edit({
           embeds: [walletEmbed],
@@ -404,13 +406,15 @@ module.exports = {
           const numberOfEmbeds = Math.ceil(newCollections.length / 30);
           const floorEmbeds = switchIt(numberOfEmbeds, newCollections);
           if (!dm) {
-            const floorChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[0]);
-            if (!floorChannel) return interaction.channel.send({
+            const floorChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[0]).catch((e) => { });
+            if (!floorChannel) return interaction.followUp({
               content: "The floors channel was not found. Please \`/config\` again.",
+              ephemeral: true,
             }).then(await loading.delete().catch(() => { }));
-            const floorMessage = await floorChannel.messages.fetch(messages[0]);
-            if (!floorMessage) return interaction.channel.send({
+            const floorMessage = await floorChannel.messages.fetch(messages[0]).catch((e) => { });
+            if (!floorMessage) return interaction.followUp({
               content: "The floors message was not found. Please \`/config\` again.",
+              ephemeral: true,
             }).then(await loading.delete().catch(() => { }));
             if (floorEmbeds.length === 1) {
               await floorMessage.edit({
@@ -531,13 +535,15 @@ module.exports = {
               const ercDescription = ercDescriptionGenerator(ercFinal);
               const ercEmbed = embedGenerator(`${usertag}\'s ERC-20 Tokens`, null, ercDescription);
               if (!dm) {
-                const ercChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[3]);
-                if (!ercChannel) return interaction.channel.send({
+                const ercChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[3]).catch((e) => { });
+                if (!ercChannel) return interaction.followUp({
                   content: "The ERC-20 channel was not found. Please \`/config\` again.",
+                  ephemeral: true
                 }).then(await loading.delete().catch(() => { }));
-                const ercMessage = await ercChannel.messages.fetch(messages[3]);
-                if (!ercMessage) return interaction.channel.send({
+                const ercMessage = await ercChannel.messages.fetch(messages[3]).catch((e) => { });
+                if (!ercMessage) return interaction.followUp({
                   content: "The ERC-20 message was not found. Please \`/config\` again.",
+                  ephemeral: true
                 }).then(await loading.delete().catch(() => { }));
                 ercMessage.edit({
                   embeds: [ercEmbed],
@@ -554,13 +560,15 @@ module.exports = {
               };
             } else {
               if (!dm) {
-                const ercChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[3]);
-                if (!ercChannel) return interaction.channel.send({
+                const ercChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[3]).catch((e) => { });
+                if (!ercChannel) return interaction.followUp({
                   content: "The ERC-20 channel was not found. Please \`/config\` again.",
+                  ephemeral: true
                 }).then(await loading.delete().catch(() => { }));
-                const ercMessage = await ercChannel.messages.fetch(messages[3]);
-                if (!ercMessage) return interaction.channel.send({
+                const ercMessage = await ercChannel.messages.fetch(messages[3]).catch((e) => { });
+                if (!ercMessage) return interaction.followUp({
                   content: "The ERC-20 message was not found. Please \`/config\` again.",
+                  ephemeral: true
                 }).then(await loading.delete().catch(() => { }));
                 ercMessage.edit({
                   content: `NO ERC-20 TOKENS FOUND`,
@@ -585,13 +593,15 @@ module.exports = {
             const portFolioDescription = `:white_medium_small_square: **LIQUID**\n:white_small_square: TOTAL LIQUID ETH : Ξ ${Number(liquid_eth).toFixed(4)}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(Number(liquid_eth) * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **NFT(S)**\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${Number(eth_nft).toFixed(4)}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(Number(eth_nft) * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **ERC-20 TOKEN(S)**\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ ETH ] : Ξ ${Number(ErcWorthEth).toFixed(4)}\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ USD ] : $ ${Number(ercWorthUSD).toFixed(2)}\n\n:white_medium_small_square: **OVERALL**\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
             const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`, null, portFolioDescription);
             if (!dm) {
-              const portfolioChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[2]);
-              if (!portfolioChannel) return interaction.channel.send({
+              const portfolioChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[2]).catch((e) => { });
+              if (!portfolioChannel) return interaction.followUp({
                 content: "The portfolio channel was not found. Please \`/config\` again.",
+                ephemeral: true
               }).then(await loading.delete().catch(() => { }));
-              const portfolioMessage = await portfolioChannel.messages.fetch(messages[2]);
-              if (!portfolioMessage) return interaction.channel.send({
+              const portfolioMessage = await portfolioChannel.messages.fetch(messages[2]).catch((e) => { });
+              if (!portfolioMessage) return interaction.followUp({
                 content: "The portfolio message was not found. Please \`/config\` again.",
+                ephemeral: true
               }).then(await loading.delete().catch(() => { }));
               await portfolioMessage.edit({
                 embeds: [portFolioEmbed],
@@ -612,13 +622,15 @@ module.exports = {
         });
       } else {
         if (!dm) {
-          const floorChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[0]);
-          if (!floorChannel) return interaction.channel.send({
+          const floorChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[0]).catch((e) => { });
+          if (!floorChannel) return interaction.followUp({
             content: "The floors channel was not found. Please \`/config\` again.",
+            ephemeral: true
           }).then(await loading.delete().catch(() => { }));
-          const floorMessage = await floorChannel.messages.fetch(messages[0]);
-          if (!floorMessage) return interaction.channel.send({
+          const floorMessage = await floorChannel.messages.fetch(messages[0]).catch((e) => { });
+          if (!floorMessage) return interaction.followUp({
             content: "The floors message was not found. Please \`/config\` again.",
+            ephemeral: true
           }).then(await loading.delete().catch(() => { }));
           floorMessage.edit({
             content: "NO NFTS FOUND",
@@ -660,13 +672,15 @@ module.exports = {
             const ercDescription = ercDescriptionGenerator(ercFinal);
             const ercEmbed = embedGenerator(`${usertag}\'s ERC-20 Tokens`, null, ercDescription);
             if (!dm) {
-              const ercChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[3]);
-              if (!ercChannel) return interaction.channel.send({
+              const ercChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[3]).catch((e) => { });
+              if (!ercChannel) return interaction.followUp({
                 content: "The ERC-20 channel was not found. Please \`/config\` again.",
+                ephemeral: true,
               }).then(await loading.delete().catch(() => { }));
-              const ercMessage = await ercChannel.messages.fetch(messages[3]);
-              if (!ercMessage) return interaction.channel.send({
+              const ercMessage = await ercChannel.messages.fetch(messages[3]).catch((e) => { });
+              if (!ercMessage) return interaction.followUp({
                 content: "The ERC-20 message was not found. Please \`/config\` again.",
+                ephemeral: true,
               }).then(await loading.delete().catch(() => { }));
               ercMessage.edit({
                 embeds: [ercEmbed],
@@ -683,13 +697,15 @@ module.exports = {
             };
           } else {
             if (!dm) {
-              const ercChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[3]);
-              if (!ercChannel) return interaction.channel.send({
+              const ercChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[3]).catch((e) => { });
+              if (!ercChannel) return interaction.followUp({
                 content: "The ERC-20 channel was not found. Please \`/config\` again.",
+                ephemeral: true
               }).then(await loading.delete().catch(() => { }));
-              const ercMessage = await ercChannel.messages.fetch(messages[3]);
-              if (!ercMessage) return interaction.channel.send({
+              const ercMessage = await ercChannel.messages.fetch(messages[3]).catch((e) => { });
+              if (!ercMessage) return interaction.followUp({
                 content: "The ERC-20 message was not found. Please \`/config\` again.",
+                ephemeral: true
               }).then(await loading.delete().catch(() => { }));
               ercMessage.edit({
                 content: `NO ERC-20 TOKENS FOUND`,
@@ -714,13 +730,15 @@ module.exports = {
           const portFolioDescription = `:white_medium_small_square: **LIQUID**\n:white_small_square: TOTAL LIQUID ETH : Ξ ${Number(liquid_eth).toFixed(4)}\n:white_small_square: TOTAL LIQUID ETH [ USD ] : $ ${(Number(liquid_eth) * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **NFT(S)**\n:white_small_square: TOTAL ETH IN NFT(S) : Ξ ${Number(eth_nft).toFixed(4)}\n:white_small_square: TOTAL ETH IN NFT(S) [ USD ] : $ ${(Number(eth_nft) * ether_usd_price).toFixed(2)}\n\n:white_medium_small_square: **ERC-20 TOKEN(S)**\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ ETH ] : Ξ ${Number(ErcWorthEth).toFixed(4)}\n:white_small_square: TOTAL WORTH OF ERC-20 TOKEN(S) [ USD ] : $ ${Number(ercWorthUSD).toFixed(2)}\n\n:white_medium_small_square: **OVERALL**\n:white_small_square: TOTAL ETH : Ξ ${totalEth}\n:white_small_square: TOTAL ETH [ USD ] : $ ${totalEthUSD}`;
           const portFolioEmbed = embedGenerator(`${usertag}\'s Portfolio`, null, portFolioDescription);
           if (!dm) {
-            const portfolioChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[2]);
-            if (!portfolioChannel) return interaction.channel.send({
+            const portfolioChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[2]).catch((e) => { });
+            if (!portfolioChannel) return interaction.followUp({
               content: "The portfolio channel was not found. Please \`/config\` again.",
+              ephemeral: true
             }).then(await loading.delete().catch(() => { }));
-            const portfolioMessage = await portfolioChannel.messages.fetch(messages[2]);
-            if (!portfolioMessage) return interaction.channel.send({
+            const portfolioMessage = await portfolioChannel.messages.fetch(messages[2]).catch((e) => { });
+            if (!portfolioMessage) return interaction.followUp({
               content: "The portfolio message was not found. Please \`/config\` again.",
+              ephemeral: true
             }).then(await loading.delete().catch(() => { }));
             await portfolioMessage.edit({
               embeds: [portFolioEmbed],
@@ -742,16 +760,18 @@ module.exports = {
     } catch (e) {
       console.log(e);
       if (interaction.deferred) {
-        await interaction.editReply({
+        await interaction.followUp({
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
           embeds: null,
           components: null,
+          ephemeral: true,
         });
       } else {
         await interaction.reply({
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
           embeds: null,
           components: null,
+          ephemeral: true,
         });
       };
       client.users.cache.get("727498137232736306").send(`Bobot has trouble in refresh.js -\n\n${e}`);
