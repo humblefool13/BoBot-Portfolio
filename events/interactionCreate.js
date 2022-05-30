@@ -18,7 +18,7 @@ module.exports = {
       if (!cooldowns.has(command.name)) {
         cooldowns.set(command.name, new Discord.Collection());
       };
-      //if (interaction.user.id !== '727498137232736306') {
+      if (interaction.user.id !== '727498137232736306') {
         const now = Date.now();
         const timestamps = cooldowns.get(command.name);
         const cooldownAmount = 120 * 1000;
@@ -34,7 +34,7 @@ module.exports = {
         };
         timestamps.set(interaction.user.id, now);
         setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
-      //};
+      };
       command.interact(client, interaction);
     } catch (e) {
       console.log(e);
