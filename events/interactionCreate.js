@@ -1,19 +1,41 @@
 const Discord = require("discord.js");
+const cooldowns = new Discord.Collection();
 
 module.exports = {
   name: "interactionCreate",
   once: false,
   async execute(client, interaction) {
-    let command = "";
+    let Icommand = "";
     try {
       if (interaction.isCommand()) {
-        command = interaction.commandName;
+        Icommand = interaction.commandName;
       } else if (interaction.isButton() && interaction.customId === "refresh") {
-        command = interaction.customId;
+        Icommand = interaction.customId;
       } else {
         return;
       };
-      client.interactions.get(command).interact(client, interaction);
+      const command = client.interactions.get(Icommand);
+      if (!cooldowns.has(command.name)) {
+        cooldowns.set(command.name, new Discord.Collection());
+      };
+      //if (interaction.user.id !== '727498137232736306') {
+        const now = Date.now();
+        const timestamps = cooldowns.get(command.name);
+        const cooldownAmount = 120 * 1000;
+        if (timestamps.has(interaction.user.id)) {
+          const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+          if (now < expirationTime) {
+            const timeLeft = parseInt(expirationTime / 1000);
+            return interaction.reply({
+              content: `Please wait till - <t:${timeLeft}:R> before reusing the \`${command.name}\` command.`,
+              ephemeral : true,
+            });
+          };
+        };
+        timestamps.set(interaction.user.id, now);
+        setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
+      //};
+      command.interact(client, interaction);
     } catch (e) {
       console.log(e);
       interaction.reply({
