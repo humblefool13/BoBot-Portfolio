@@ -24,9 +24,9 @@ async function editEndMsg(config, client) {
     const channels = config.channel_ids;
     const messages = config.message_ids;
     for (i = 0; i <= 3; i++) {
-      const channel = await client.channels.fetch(channels[i]);
+      const channel = await client.channels.fetch(channels[i]).catch((e) => { });
       if (channel) {
-        const message = await channel.messages.fetch(messages[i]);
+        const message = await channel.messages.fetch(messages[i]).catch((e) => { });
         if (message) {
           message.edit({
             content: "Your subscription has ended . Please contact us in our support server to renew it in order to continue using the services !\nThank you.",

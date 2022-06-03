@@ -50,6 +50,7 @@ const {
   RateLimiter
 } = require("limiter");
 const config_records = require('../models/configRecords');
+const sub_records = require('../models/subscriptionRecords');
 let etherscan_key = process.env['etherscan_key'];
 etherscan_key = etherscan_key.split(",");
 let eklength = etherscan_key.length;
@@ -340,6 +341,29 @@ module.exports = {
       let ErcWorthEth = 0;
       let guild_id = "";
       if (!dm) guild_id = find.guild_id;
+      const findSub = await sub_records.findOne({
+        discord_id: interaction.user.id,
+      });
+      const endTimestamp = findSub.end_timestamp;
+      const diff = endTimestamp - Date.now();
+      if (diff <= 1000 * 60 * 60 * 24 * 3) {
+        if (diff >= 1000 * 60 * 60 * 24 * 2) {
+          await interaction.followUp({
+            content: `Your subscription ends within 3 days on <t:${parseInt(endTimestamp / 1000)}:F>.\n[Contact us](https://discord.gg/bDcEpAQMUt 'Click to extend subscription') to extend subscription and contiue using the service without any interruption!!!`,
+            ephemeral: true,
+          }).catch((e) => { });
+        } else if (diff >= 1000 * 60 * 60 * 24 * 1 && diff <= 1000 * 60 * 60 * 24 * 2) {
+          await interaction.followUp({
+            content: `Your subscription ends within 2 days on <t:${parseInt(endTimestamp / 1000)}:F>.\n[Contact us](https://discord.gg/bDcEpAQMUt 'Click to extend subscription') to extend subscription and contiue using the service without any interruption!!!`,
+            ephemeral: true,
+          }).catch((e) => { });
+        } else {
+          await interaction.followUp({
+            content: `Your subscription ends within a day on <t:${parseInt(endTimestamp / 1000)}:F>.\n[Contact us](https://discord.gg/bDcEpAQMUt 'Click to extend subscription') to extend subscription and contiue using the service without any interruption!!!`,
+            ephemeral: true,
+          }).catch((e) => { });
+        };
+      };
 
       //////////// WALLETS OPERATIONS HERE ////////////
 
