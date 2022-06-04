@@ -364,6 +364,10 @@ module.exports = {
           }).catch((e) => { });
         };
       };
+      await interaction.followUp({
+        content: "Please do not spam the command and allow the application to update everything . Usually this is quick , but somestimes it may take few mins depending on traffic !\nThank you.",
+        ephemeral: true,
+      }).catch((e) => { });
 
       //////////// WALLETS OPERATIONS HERE ////////////
 
@@ -595,14 +599,14 @@ module.exports = {
                   ephemeral: true
                 }).then(await loading.delete().catch(() => { }));
                 ercMessage.edit({
-                  content: `NO ERC-20 TOKENS FOUND`,
+                  content: `NO ERC-20 TOKENS FOUND\nLast Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
                   embeds: [],
                   components: [row],
                 }).catch((e) => { });
               } else {
                 const ercMessage = await channel.messages.fetch(messages[3]);
                 ercMessage.edit({
-                  content: `NO ERC-20 TOKENS FOUND`,
+                  content: `NO ERC-20 TOKENS FOUND\nLast Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
                   embeds: [],
                   components: [],
                 }).catch((e) => { });
@@ -657,14 +661,14 @@ module.exports = {
             ephemeral: true
           }).then(await loading.delete().catch(() => { }));
           floorMessage.edit({
-            content: "NO NFTS FOUND",
+            content: `NO NFTS FOUND\nLast Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
             embeds: [],
             components: [row],
           }).catch((e) => { });
         } else {
           const floorMessage = await channel.messages.fetch(messages[0]);
           floorMessage.edit({
-            content: "NO NFTS FOUND",
+            content: `NO NFTS FOUND\nLast Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
             embeds: [],
             components: [],
           }).catch((e) => { });
@@ -732,14 +736,14 @@ module.exports = {
                 ephemeral: true
               }).then(await loading.delete().catch(() => { }));
               ercMessage.edit({
-                content: `NO ERC-20 TOKENS FOUND`,
+                content: `NO ERC-20 TOKENS FOUND\nLast Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
                 embeds: [],
                 components: [row],
               }).catch((e) => { });
             } else {
               const ercMessage = await channel.messages.fetch(messages[3]);
               ercMessage.edit({
-                content: `NO ERC-20 TOKENS FOUND`,
+                content: `NO ERC-20 TOKENS FOUND\nLast Updated : <t:${parseInt(Date.now() / 1000)}:R>`,
                 embeds: [],
                 components: [],
               }).catch((e) => { });
