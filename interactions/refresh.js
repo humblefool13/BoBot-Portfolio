@@ -790,15 +790,15 @@ module.exports = {
       if (interaction.deferred) {
         await interaction.followUp({
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
-          embeds: null,
-          components: null,
+          embeds: [],
+          components: [],
           ephemeral: true,
         });
       } else {
         await interaction.reply({
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
-          embeds: null,
-          components: null,
+          embeds: [],
+          components: [],
           ephemeral: true,
         });
       };
