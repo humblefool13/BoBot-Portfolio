@@ -10,5 +10,23 @@
     "node-fetch": "^2.6.7",
     "scrapingbee": "^1.6.1",
     "web3": "^1.7.3"
-  }
+  },
+  "name": "bobot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/humblefool13/BoBot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/humblefool13/BoBot/issues"
+  },
+  "homepage": "https://github.com/humblefool13/BoBot#readme",
+  "description": ""
 }
