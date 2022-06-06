@@ -6,7 +6,7 @@ const {
 const fs = require('fs');
 
 const client = new Client({
-  intents: [Intents.FLAGS.GUILDS]
+  intents: [Intents.FLAGS.GUILDS,Intents.FLAGS.GUILD_MEMBERS]
 });
 
 client.interactions = new Collection();

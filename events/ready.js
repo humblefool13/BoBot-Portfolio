@@ -39,6 +39,16 @@ async function editEndMsg(config, client) {
   };
 };
 
+async function handleRoles(subscribers, client) {
+  const guild = client.guilds.cache.get("969155191339384892");
+  const members = await guild.members.fetch();
+  members.each((m) => {
+    const id = m.id;
+    if (m.roles.cache.has("983243599691005993") && !subscribers.includes(id)) return m.roles.remove("983243599691005993");
+    if (!m.roles.cache.has("983243599691005993") && subscribers.includes(id)) return m.roles.add("983243599691005993");
+  });
+};
+
 module.exports = {
   name: 'ready',
   once: true,
@@ -46,6 +56,8 @@ module.exports = {
     console.log("!!!!! BOBOT IS ON !!!!!");
     async function configFilter() {
       const subs = await sub_records.find();
+      const subscribers = subs.map(e => e.discord_id);
+      handleRoles(subscribers, client);
       subs.forEach(async (sub) => {
         const end_timestamp = sub.end_timestamp;
         if (Date.now() < end_timestamp) return;
