@@ -71,6 +71,8 @@ const limiter_cv = new RateLimiter({
   interval: "second",
   fireImmediately: true
 });
+const permittedContracts = ["0x6b175474e89094c44da98b954eedeac495271d0f", "0xdac17f958d2ee523a2206206994597c13d831ec7", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "0x4fabb145d64652a948d72533023f6e7a623c7c53", "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce", "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", "0x514910771af9ca656af840dff83e8264ecf986ca", "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", "0x0f5d2fb29fb7d3cfee444a200298f468908cc942", "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9", "0x3845badade8e6dff049820680d1f14bd3903a5d0", "0xbb0e17ef65f82ab018d8edd776e8dd940327b28b", "0x15d4c048f83bd7e37d49ea4c83a07267ec4203da"];
+// DAI USDT USDC WETH BUSD WBTC SHIBAINU UNISWAP CHAINLINK MATIC MANA AAVE SAND AXIEINFINITY GALA
 
 ////////////// SYNC FUNCTIONS //////////////
 
@@ -547,7 +549,12 @@ module.exports = {
             do {
               ercResponse = await getUrlCovalent(url);
             } while (!ercResponse || !ercResponse?.data?.items)
-            const tokens = ercResponse.data.items;
+            let tokens = [];
+            const tokensInitial = ercResponse.data.items;
+            tokensInitial.forEach((token) => {
+              if (!permittedContracts.includes(token.contract_address.toLowerCase())) return;
+              tokens.push(token);
+            });
             if (tokens.length) {
               const balances = tokens.map((e) => [e.contract_name, e.contract_ticker_symbol, e.quote_rate ? e.quote_rate.toFixed(4) : 0, (Number(e.balance) / Math.pow(10, e.contract_decimals)).toFixed(4), e.quote ? e.quote.toFixed(2) : 0]);
               ercResponses.push(balances);
@@ -684,7 +691,12 @@ module.exports = {
           do {
             ercResponse = await getUrlCovalent(url);
           } while (!ercResponse || !ercResponse?.data?.items)
-          const tokens = ercResponse.data.items;
+          let tokens = [];
+          const tokensInitial = ercResponse.data.items;
+          tokensInitial.forEach((token) => {
+            if (!permittedContracts.includes(token.contract_address.toLowerCase())) return;
+            tokens.push(token);
+          });
           if (tokens.length) {
             const balances = tokens.map((e) => [e.contract_name, e.contract_ticker_symbol, e.quote_rate ? e.quote_rate.toFixed(4) : 0, (Number(e.balance) / Math.pow(10, e.contract_decimals)).toFixed(4), e.quote ? e.quote.toFixed(2) : 0]);
             ercResponses.push(balances);

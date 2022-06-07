@@ -56,70 +56,70 @@ module.exports = {
       nft_wallets.push(nft_1.trim().toLowerCase());
       wallets.push(nft_1.trim().toLowerCase());
       if (nft_1.trim().length !== 42 || !nft_1.trim().startsWith("0x")) return interaction.editReply({
-        content: `The wallet you provided ${nft_1} is not a valid wallet address . Please don't use ENS domain names . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+        content: `The wallet you provided ${nft_1} is not a valid wallet address . Please don't use ENS domain names . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/HweZtrzAnX 'Click to join the support server !')`,
         ephemeral: true,
       });
       if (nft_2) {
         nft_wallets.push(nft_2.trim().toLowerCase());
         wallets.push(nft_2.trim().toLowerCase());
         if (nft_2.trim().length !== 42 || !nft_2.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${nft_2} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          content: `The wallet you provided ${nft_2} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/HweZtrzAnX 'Click to join the support server !')`,
           ephemeral: true,
         });
       };
       if (eth_1) {
         wallets.push(eth_1.trim().toLowerCase());
         if (eth_1.trim().length !== 42 || !eth_1.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_1} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          content: `The wallet you provided ${eth_1} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/HweZtrzAnX 'Click to join the support server !')`,
           ephemeral: true,
         });
       };
       if (eth_2) {
         wallets.push(eth_2.trim().toLowerCase());
         if (eth_2.trim().length !== 42 || !eth_2.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_2} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          content: `The wallet you provided ${eth_2} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/HweZtrzAnX 'Click to join the support server !')`,
           ephemeral: true,
         });
       };
       if (eth_3) {
         wallets.push(eth_3.trim().toLowerCase());
         if (eth_3.trim().length !== 42 || !eth_3.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_3} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          content: `The wallet you provided ${eth_3} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/HweZtrzAnX 'Click to join the support server !')`,
           ephemeral: true,
         });
       };
       if (eth_4) {
         wallets.push(eth_4.trim().toLowerCase());
         if (eth_4.trim().length !== 42 || !eth_4.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_4} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          content: `The wallet you provided ${eth_4} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/HweZtrzAnX 'Click to join the support server !')`,
           ephemeral: true,
         });
       };
       if (eth_5) {
         wallets.push(eth_5.trim().toLowerCase());
         if (eth_5.trim().length !== 42 || !eth_5.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_5} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          content: `The wallet you provided ${eth_5} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/HweZtrzAnX 'Click to join the support server !')`,
           ephemeral: true,
         });
       };
       if (eth_6) {
         wallets.push(eth_6.trim().toLowerCase());
         if (eth_6.trim().length !== 42 || !eth_6.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_6} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          content: `The wallet you provided ${eth_6} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/HweZtrzAnX 'Click to join the support server !')`,
           ephemeral: true,
         });
       };
       if (eth_7) {
         wallets.push(eth_7.trim().toLowerCase());
         if (eth_7.trim().length !== 42 || !eth_7.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_7} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          content: `The wallet you provided ${eth_7} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/HweZtrzAnX 'Click to join the support server !')`,
           ephemeral: true,
         });
       };
       if (eth_8) {
         wallets.push(eth_8.trim().toLowerCase());
         if (eth_8.trim().length !== 42 || !eth_8.trim().startsWith("0x")) return interaction.editReply({
-          content: `The wallet you provided ${eth_8} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !')`,
+          content: `The wallet you provided ${eth_8} is not a valid wallet address . Please don't use ENS . \nIf you think this is a mistake please let us know in our [Discord Support Server](https://discord.gg/HweZtrzAnX 'Click to join the support server !')`,
           ephemeral: true,
         });
       };

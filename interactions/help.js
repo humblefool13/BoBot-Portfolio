@@ -27,7 +27,7 @@ module.exports = {
       const more = new MessageEmbed()
         .setTitle("4) Something Else")
         .setColor("#454be9")
-        .setDescription("➭ Are you facing some issues ?\n➭ Did your subscription not validate ?\n➭ Have some feedback / suggestion ?\n**. . .**\n\nYou are always welcome to join our [discord support server](https://discord.gg/KFp3dgGQwC 'Click to join the support server !') for anything you would like to talk to us regarding the bot !\nWe would love to hear from you !!!");
+        .setDescription("➭ Are you facing some issues ?\n➭ Did your subscription not validate ?\n➭ Have some feedback / suggestion ?\n**. . .**\n\nYou are always welcome to join our [discord support server](https://discord.gg/HweZtrzAnX 'Click to join the support server !') for anything you would like to talk to us regarding the bot !\nWe would love to hear from you !!!");
       const channel = await client.channels.fetch(interaction.channelId);
       if (channel.type === "DM" || channel.type === "GROUP_DM") {
         return interaction.reply({
