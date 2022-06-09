@@ -53,9 +53,13 @@ module.exports = {
   name: 'ready',
   once: true,
   async execute(client) {
+    client.user.setStatus('online');
+    const guildsCount = client.guilds.cache.size;
     console.log("!!!!! BOBOT IS ON !!!!!");
     async function configFilter() {
       const subs = await sub_records.find();
+      const subscriberCount = subs.length;
+      client.user.setActivity(`${subscriberCount} Portfolios | ${guildsCount} Servers`, { type: 'WATCHING' });
       const subscribers = subs.map(e => e.discord_id);
       handleRoles(subscribers, client);
       subs.forEach(async (sub) => {
