@@ -5,5 +5,5 @@ module.exports = async () => {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
-  console.log("Connected to \"Free Users\" database.");
+  console.log("Connected to database.");
 };

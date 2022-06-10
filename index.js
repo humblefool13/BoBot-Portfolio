@@ -14,9 +14,7 @@ client.interactions = new Collection();
 require('./handlers/events')(client);
 require('./handlers/interactions')(client);
 
-require('./databases/freeTrials')();
-require('./databases/configRecords')();
-require('./databases/subscriptionRecords')();
+require('./databases/mainDB')();
 
 process.on("unhandledRejection", (reason, p) => {
   console.log('[ ANTICRASH ] :: Unhandled Rejection / Catch');
