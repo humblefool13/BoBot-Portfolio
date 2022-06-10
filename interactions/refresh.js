@@ -3,6 +3,7 @@ const {
   MessageActionRow,
   MessageButton
 } = require("discord.js");
+const options = { method: 'GET', headers: { Accept: 'application/json', "X-API-KEY": process.env['os_key'] } };
 const row_left = new MessageActionRow()
   .addComponents(
     new MessageButton()
@@ -290,7 +291,7 @@ async function getEther(stra) {
 async function getUrlOSAPI(url) {
   const remainingRequests = await limiter_OS.removeTokens(1);
   if (remainingRequests < 0) return;
-  const result = await fetch(url);
+  const result = await fetch(url,options);
   const response = await result.json();
   return response;
 };
