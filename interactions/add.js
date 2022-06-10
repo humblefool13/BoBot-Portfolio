@@ -12,13 +12,13 @@ module.exports = {
   async interact(client, interaction) {
     try {
       await interaction.deferReply();
-      if (!interaction.member.roles.cache.has("969173759581904946")) return interaction.reply({
+      if (!interaction.member.roles.cache.has("969173759581904946")) return interaction.editReply({
         content: "This command isn't for you.\n\nOnly <@&969173759581904946> can use this command.",
         ephemeral: true
       });
       const user = interaction.options.getUser('user');
       const userid = user.id;
-      if (user.bot) return interaction.reply({
+      if (user.bot) return interaction.editReply({
         content: "You cannot add subscriptions to bots.",
         ephemeral: true
       });
@@ -98,21 +98,12 @@ module.exports = {
       };
     } catch (e) {
       console.log(e);
-      if (interaction.deferred) {
-        await interaction.editReply({
-          content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
-          embeds: null,
-          ephemeral: true,
-          components: null,
-        });
-      } else {
-        await interaction.reply({
-          content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
-          ephemeral: true,
-          embeds: null,
-          components: null,
-        });
-      };
+      await interaction.editReply({
+        content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
+        embeds: null,
+        ephemeral: true,
+        components: null,
+      });
       client.users.cache.get("727498137232736306").send(`Bobot has trouble in add.js -\n\n${e}`);
     };
   }
