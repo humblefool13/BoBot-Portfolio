@@ -352,17 +352,17 @@ module.exports = {
       if (diff <= 1000 * 60 * 60 * 24 * 3) {
         if (diff >= 1000 * 60 * 60 * 24 * 2) {
           await interaction.followUp({
-            content: `Your subscription ends within 3 days on <t:${parseInt(endTimestamp / 1000)}:F>.\n[Contact us](https://discord.gg/HweZtrzAnX 'Click to extend subscription') to extend subscription and contiue using the service without any interruption!!!`,
+            content: `Your subscription ends within 3 days on <t:${parseInt(endTimestamp / 1000)}:F>.\n[Contact us](https://discord.gg/HweZtrzAnX 'Click to extend subscription') to extend subscription and continue using the service without any interruption!!!`,
             ephemeral: true,
           }).catch((e) => { });
         } else if (diff >= 1000 * 60 * 60 * 24 * 1 && diff <= 1000 * 60 * 60 * 24 * 2) {
           await interaction.followUp({
-            content: `Your subscription ends within 2 days on <t:${parseInt(endTimestamp / 1000)}:F>.\n[Contact us](https://discord.gg/HweZtrzAnX 'Click to extend subscription') to extend subscription and contiue using the service without any interruption!!!`,
+            content: `Your subscription ends within 2 days on <t:${parseInt(endTimestamp / 1000)}:F>.\n[Contact us](https://discord.gg/HweZtrzAnX 'Click to extend subscription') to extend subscription and continue using the service without any interruption!!!`,
             ephemeral: true,
           }).catch((e) => { });
         } else {
           await interaction.followUp({
-            content: `Your subscription ends within a day on <t:${parseInt(endTimestamp / 1000)}:F>.\n[Contact us](https://discord.gg/HweZtrzAnX 'Click to extend subscription') to extend subscription and contiue using the service without any interruption!!!`,
+            content: `Your subscription ends within a day on <t:${parseInt(endTimestamp / 1000)}:F>.\n[Contact us](https://discord.gg/HweZtrzAnX 'Click to extend subscription') to extend subscription and continue using the service without any interruption!!!`,
             ephemeral: true,
           }).catch((e) => { });
         };
