@@ -213,19 +213,19 @@ module.exports = {
       };
     } catch (e) {
       console.log(e);
-      if (interaction.deferred) {
-        await interaction.editReply({
+      if (interaction.deferred || interaction.replied) {
+        await interaction.followUp({
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
+          embeds: [],
+          components: [],
           ephemeral: true,
-          embeds: null,
-          components: null,
         });
       } else {
         await interaction.reply({
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
-          embeds: null,
+          embeds: [],
+          components: [],
           ephemeral: true,
-          components: null,
         });
       };
       client.users.cache.get("727498137232736306").send(`Bobot has trouble in config.js -\n\n${e}`);

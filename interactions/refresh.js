@@ -800,7 +800,7 @@ module.exports = {
       };
     } catch (e) {
       console.log(e);
-      if (interaction.deferred) {
+      if (interaction.deferred || interaction.replied) {
         await interaction.followUp({
           content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
           embeds: [],

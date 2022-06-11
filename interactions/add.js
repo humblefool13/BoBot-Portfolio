@@ -98,12 +98,21 @@ module.exports = {
       };
     } catch (e) {
       console.log(e);
-      await interaction.editReply({
-        content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
-        embeds: null,
-        ephemeral: true,
-        components: null,
-      });
+      if (interaction.deferred || interaction.replied) {
+        await interaction.followUp({
+          content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
+          embeds: [],
+          components: [],
+          ephemeral: true,
+        });
+      } else {
+        await interaction.reply({
+          content: "I am facing some issues , the dev has been informed . Please try again in some hours.",
+          embeds: [],
+          components: [],
+          ephemeral: true,
+        });
+      };
       client.users.cache.get("727498137232736306").send(`Bobot has trouble in add.js -\n\n${e}`);
     };
   }
