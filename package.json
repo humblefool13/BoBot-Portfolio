@@ -28,5 +28,8 @@
     "url": "https://github.com/humblefool13/BoBot/issues"
   },
   "homepage": "https://github.com/humblefool13/BoBot#readme",
-  "description": ""
+  "description": "",
+  "engines":{
+    "node":"16"
+  }
 }
