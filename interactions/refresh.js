@@ -71,9 +71,9 @@ const limiter_cv = new RateLimiter({
   interval: "second",
   fireImmediately: true
 });
-const permittedContracts = ["0x6b175474e89094c44da98b954eedeac495271d0f", "0xdac17f958d2ee523a2206206994597c13d831ec7", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "0x4fabb145d64652a948d72533023f6e7a623c7c53", "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce", "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", "0x514910771af9ca656af840dff83e8264ecf986ca", "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", "0x0f5d2fb29fb7d3cfee444a200298f468908cc942", "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9", "0x3845badade8e6dff049820680d1f14bd3903a5d0", "0xbb0e17ef65f82ab018d8edd776e8dd940327b28b", "0x15d4c048f83bd7e37d49ea4c83a07267ec4203da", "0xf4d2888d29d722226fafa5d9b24f9164c092421e", "0x94e496474f1725f1c1824cb5bdb92d7691a4f03a", "0x4d224452801aced8b2f0aebe155379bb5d594381", "0xb8c77482e45f1f44de1745f52c74426c631bdd52"];
+const permittedContracts = ["0x6b175474e89094c44da98b954eedeac495271d0f", "0xdac17f958d2ee523a2206206994597c13d831ec7", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "0x4fabb145d64652a948d72533023f6e7a623c7c53", "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce", "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", "0x514910771af9ca656af840dff83e8264ecf986ca", "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", "0x0f5d2fb29fb7d3cfee444a200298f468908cc942", "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9", "0x3845badade8e6dff049820680d1f14bd3903a5d0", "0xbb0e17ef65f82ab018d8edd776e8dd940327b28b", "0x15d4c048f83bd7e37d49ea4c83a07267ec4203da", "0xf4d2888d29d722226fafa5d9b24f9164c092421e", "0x94e496474f1725f1c1824cb5bdb92d7691a4f03a", "0x4d224452801aced8b2f0aebe155379bb5d594381", "0xb8c77482e45f1f44de1745f52c74426c631bdd52", "0x9a4469e96b2c1e3a178e2af346146e4ea5ec3ccc", "0xbc91347e80886453f3f8bbd6d7ac07c122d87735", "0x1599fe55cda767b1f631ee7d414b41f5d6de393d"];
 
-// DAI USDT USDC WETH BUSD WBTC SHIBAINU UNISWAP CHAINLINK MATIC MANA AAVE SAND AXIEINFINITY GALA LOOKS BANANA APECOIN BNB
+// DAI USDT USDC WETH BUSD WBTC SHIBAINU UNISWAP CHAINLINK MATIC MANA AAVE SAND AXIEINFINITY GALA LOOKS BANANA APECOIN BNB ETHX MILK BANANAPOLYGON
 
 ////////////// SYNC FUNCTIONS //////////////
 
@@ -543,16 +543,26 @@ module.exports = {
           ////////////// ERC 20 OPERATIONS //////////////
 
           let ercResponses = [];
+          let polyResponses = [];
           let ercWorthUSD = 0;
           wallets.forEach(async (wallet) => {
             let ercResponse = "";
             const url = `https://api.covalenthq.com/v1/1/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=${process.env['covalent_key']}`;
+            const urlPolygon = `https://api.covalenthq.com/v1/137/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=${process.env['covalent_key']}`;
             do {
               ercResponse = await getUrlCovalent(url);
             } while (!ercResponse || !ercResponse?.data?.items)
+            do {
+              polyResponses = await getUrlCovalent(urlPolygon);
+            } while (!polyResponses || !polyResponses?.data?.items)
             let tokens = [];
             const tokensInitial = ercResponse.data.items;
+            const tokensPoly = polyResponses.data.items;
             tokensInitial.forEach((token) => {
+              if (!permittedContracts.includes(token.contract_address.toLowerCase())) return;
+              tokens.push(token);
+            });
+            tokensPoly.forEach((token) => {
               if (!permittedContracts.includes(token.contract_address.toLowerCase())) return;
               tokens.push(token);
             });
@@ -685,16 +695,26 @@ module.exports = {
         /////////////// ERC 20 OPERATIONS ///////////////
 
         let ercResponses = [];
+        let polyResponses = [];
         let ercWorthUSD = 0;
         wallets.forEach(async (wallet) => {
           let ercResponse = "";
           const url = `https://api.covalenthq.com/v1/1/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=${process.env['covalent_key']}`;
+          const urlPolygon = `https://api.covalenthq.com/v1/137/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=${process.env['covalent_key']}`;
           do {
             ercResponse = await getUrlCovalent(url);
           } while (!ercResponse || !ercResponse?.data?.items)
+          do {
+            polyResponses = await getUrlCovalent(urlPolygon);
+          } while (!polyResponses || !polyResponses?.data?.items)
           let tokens = [];
           const tokensInitial = ercResponse.data.items;
+          const tokensPoly = polyResponses.data.items;
           tokensInitial.forEach((token) => {
+            if (!permittedContracts.includes(token.contract_address.toLowerCase())) return;
+            tokens.push(token);
+          });
+          tokensPoly.forEach((token) => {
             if (!permittedContracts.includes(token.contract_address.toLowerCase())) return;
             tokens.push(token);
           });
