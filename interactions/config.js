@@ -124,19 +124,19 @@ module.exports = {
         });
       };
       if (!dm) {
-        const category = await interaction.guild.channels.create("BoBot PortFolio", {
+        const category = await interaction.guild.channels.create("🤖 BoBot PortFolio 🤖", {
           type: "GUILD_CATEGORY"
         });
-        const floors_channel = await category.createChannel("floor-prices", {
+        const floors_channel = await category.createChannel("📈︱floor-prices", {
           topic: "Get real time floor prices of collections owned by just clicking a button!!!"
         });
-        const erc20_channel = await category.createChannel("erc-20-stats", {
+        const erc20_channel = await category.createChannel("🪙︱erc-20-stats", {
           topic: "Get real time stats of ERC-20 tokens owned by just clicking a button!!!"
         });
-        const wallets_channel = await category.createChannel("wallets-stats", {
+        const wallets_channel = await category.createChannel("💵︱wallets-stats", {
           topic: "Get real time stats of wallets owned by just clicking a button!!!"
         });
-        const portfolio_channel = await category.createChannel("portfolio", {
+        const portfolio_channel = await category.createChannel("💰︱portfolio", {
           topic: "Get real time portfolio by just clicking a button!!!"
         });
         const channel_ids = [floors_channel.id, wallets_channel.id, portfolio_channel.id, erc20_channel.id];
