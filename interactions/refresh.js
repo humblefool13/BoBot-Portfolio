@@ -543,21 +543,21 @@ module.exports = {
           ////////////// ERC 20 OPERATIONS //////////////
 
           let ercResponses = [];
-          let polyResponses = [];
           let ercWorthUSD = 0;
           wallets.forEach(async (wallet) => {
             let ercResponse = "";
+            let polyResponse = "";
             const url = `https://api.covalenthq.com/v1/1/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=${process.env['covalent_key']}`;
             const urlPolygon = `https://api.covalenthq.com/v1/137/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=${process.env['covalent_key']}`;
             do {
               ercResponse = await getUrlCovalent(url);
             } while (!ercResponse || !ercResponse?.data?.items)
             do {
-              polyResponses = await getUrlCovalent(urlPolygon);
-            } while (!polyResponses || !polyResponses?.data?.items)
+              polyResponse = await getUrlCovalent(urlPolygon);
+            } while (!polyResponse || !polyResponse?.data?.items)
             let tokens = [];
             const tokensInitial = ercResponse.data.items;
-            const tokensPoly = polyResponses.data.items;
+            const tokensPoly = polyResponse.data.items;
             tokensInitial.forEach((token) => {
               if (!permittedContracts.includes(token.contract_address.toLowerCase())) return;
               tokens.push(token);
@@ -695,21 +695,21 @@ module.exports = {
         /////////////// ERC 20 OPERATIONS ///////////////
 
         let ercResponses = [];
-        let polyResponses = [];
         let ercWorthUSD = 0;
         wallets.forEach(async (wallet) => {
           let ercResponse = "";
+          let polyResponse = "";
           const url = `https://api.covalenthq.com/v1/1/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=${process.env['covalent_key']}`;
           const urlPolygon = `https://api.covalenthq.com/v1/137/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=false&key=${process.env['covalent_key']}`;
           do {
             ercResponse = await getUrlCovalent(url);
           } while (!ercResponse || !ercResponse?.data?.items)
           do {
-            polyResponses = await getUrlCovalent(urlPolygon);
-          } while (!polyResponses || !polyResponses?.data?.items)
+            polyResponse = await getUrlCovalent(urlPolygon);
+          } while (!polyResponse || !polyResponse?.data?.items)
           let tokens = [];
           const tokensInitial = ercResponse.data.items;
-          const tokensPoly = polyResponses.data.items;
+          const tokensPoly = polyResponse.data.items;
           tokensInitial.forEach((token) => {
             if (!permittedContracts.includes(token.contract_address.toLowerCase())) return;
             tokens.push(token);
