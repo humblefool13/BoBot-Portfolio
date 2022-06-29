@@ -41,7 +41,7 @@ const row_right = new MessageActionRow()
 const row = new MessageActionRow()
   .addComponents(
     new MessageButton()
-      .setLabel("🔄")
+      .setLabel("REFRESH")
       .setStyle("SUCCESS")
       .setCustomId("refresh")
   );
