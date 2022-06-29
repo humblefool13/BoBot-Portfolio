@@ -80,7 +80,7 @@ const permittedContracts = ["0x6b175474e89094c44da98b954eedeac495271d0f", "0xdac
 ////////////// SYNC FUNCTIONS //////////////
 
 function embedGenerator(title, url, description) {
-  const returnEmbed = new MessageEmbed().setColor("#454be9").setTitle(title).setDescription(description);
+  const returnEmbed = new MessageEmbed().setColor("#454be9").setTitle(title).setDescription(description).setFooter({ text: 'Powered by BoBot', iconURL: 'https://media.discordapp.net/attachments/797163839765741568/969482807678234725/unknown-1.png?width=452&height=452' });
   if (url) returnEmbed.setURL(url);
   return returnEmbed;
 };

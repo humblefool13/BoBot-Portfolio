@@ -128,16 +128,16 @@ module.exports = {
           type: "GUILD_CATEGORY"
         });
         const floors_channel = await category.createChannel("📈︱floor-prices", {
-          topic: "Get real time floor prices of collections owned by just clicking a button!!!"
+          topic: "Get real time floor prices of collections owned by just clicking a button . Powered by BoBot : https://discord.gg/HweZtrzAnX ! "
         });
         const erc20_channel = await category.createChannel("🪙︱erc-20-stats", {
-          topic: "Get real time stats of ERC-20 tokens owned by just clicking a button!!!"
+          topic: "Get real time stats of ERC-20 tokens owned by just clicking a button . Powered by BoBot : https://discord.gg/HweZtrzAnX ! "
         });
         const wallets_channel = await category.createChannel("💵︱wallets-stats", {
-          topic: "Get real time stats of wallets owned by just clicking a button!!!"
+          topic: "Get real time stats of wallets owned by just clicking a button . Powered by BoBot : https://discord.gg/HweZtrzAnX ! "
         });
         const portfolio_channel = await category.createChannel("💰︱portfolio", {
-          topic: "Get real time portfolio by just clicking a button!!!"
+          topic: "Get real time portfolio by just clicking a button . Powered by BoBot : https://discord.gg/HweZtrzAnX ! "
         });
         const channel_ids = [floors_channel.id, wallets_channel.id, portfolio_channel.id, erc20_channel.id];
         const floor_msg = await floors_channel.send({
@@ -170,7 +170,7 @@ module.exports = {
           console.log(e)
         });
         return interaction.editReply({
-          content: `Your Bobot kit is setup at the category named \"BOBOT PORTFOLIO\" with channels <#${channel_ids.join("> , <#")}>. \nClicking any of the buttons in any channel will refresh all stats i.e. clicking the refresh button at floor channel will refresh all - floors , wallets , erc-20s , portfolio .....\n\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`,
+          content: `Your BoBot kit is setup at the category named \"BOBOT PORTFOLIO\" with channels <#${channel_ids.join("> , <#")}>. \nClicking any of the buttons in any channel will refresh all stats i.e. clicking the refresh button at floor channel will refresh all - floors , wallets , erc-20s , portfolio .....\n\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`,
           ephemeral: true,
         });
       } else {
@@ -207,7 +207,7 @@ module.exports = {
         });
         await sendDm.delete().catch((e) => { });
         return interaction.editReply({
-          content: `Your Bobot kit is setup below , the button below is for floor prices , erc-20 tokens , wallets and entire portfolio refresh !\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`,
+          content: `Your BoBot kit is setup below , the button below is for floor prices , erc-20 tokens , wallets and entire portfolio refresh !\nHope you can track your gains/losses better now !!!\nGoodluck on this journey ! :slight_smile:`,
           ephemeral: true,
         });
       };
