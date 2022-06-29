@@ -55,6 +55,8 @@ let etherscan_key = process.env['etherscan_key'];
 etherscan_key = etherscan_key.split(",");
 let eklength = etherscan_key.length;
 let ekv = 0;
+const priceUrl = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd";
+let ether_usd_price = 0;
 const fetch = require("node-fetch");
 const limiter_OS = new RateLimiter({
   tokensPerInterval: 4,
@@ -295,15 +297,9 @@ async function getUrlOSAPI(url) {
   return response;
 };
 async function ether_usd() {
-  const remainingRequests = await limiter_eth.removeTokens(1);
-  if (remainingRequests < 0) return;
-  const etherurl = `https://api.etherscan.io/api?module=stats&action=ethprice&apikey=${etherscan_key[ekv++]}`;
-  if (ekv === eklength) ekv = 0;
-  const etherresult = await fetch(etherurl);
-  const etherresponse = await etherresult.json();
-  const eth_usd = (Number(etherresponse.result.ethusd)).toFixed(2);
-  const final = Number(eth_usd);
-  return final;
+  const req = await fetch(priceUrl);
+  const temp = await req.json();
+  ether_usd_price = Number(temp.ethereum.usd);
 };
 async function getUrlCovalent(url) {
   const remainingRequests = await limiter_cv.removeTokens(1);
@@ -374,11 +370,9 @@ module.exports = {
 
       //////////// WALLETS OPERATIONS HERE ////////////
 
-      let ether_usd_price = "";
+      await ether_usd();
+      setInterval(ether_usd, 60 * 1000);
       let etherResponse = "";
-      do {
-        ether_usd_price = await ether_usd();
-      } while (typeof ether_usd_price !== "number")
       const addressString = wallets.join(",");
       do {
         etherResponse = await getEther(addressString);
