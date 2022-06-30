@@ -429,6 +429,9 @@ module.exports = {
           nft_worth = nft_worth + Number((floor * collection[2]).toFixed(4));
           if (collections.length !== newCollections.length) return;
           const numberOfEmbeds = Math.ceil(newCollections.length / 30);
+          newCollections.sort(function(a, b) {
+            return b[2] - a[2]
+          });
           const floorEmbeds = switchIt(numberOfEmbeds, newCollections);
           if (!dm) {
             const floorChannel = await client.guilds.cache.get(guild_id).channels.fetch(channels[0]).catch((e) => { });
