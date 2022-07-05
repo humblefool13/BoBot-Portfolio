@@ -14,7 +14,6 @@
   "name": "bobot",
   "version": "1.0.0",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -29,7 +28,7 @@
   },
   "homepage": "https://github.com/humblefool13/BoBot#readme",
   "description": "",
-  "engines":{
-    "node":"16"
+  "engines": {
+    "node": "16"
   }
 }

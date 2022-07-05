@@ -1,7 +1,8 @@
 const {
   MessageEmbed,
   MessageActionRow,
-  MessageButton
+  MessageButton , 
+  Permissions
 } = require("discord.js");
 const mongoose = require("mongoose");
 const config_records = require('../models/configRecords');
@@ -18,6 +19,13 @@ module.exports = {
   name: "config",
   async interact(client, interaction) {
     try {
+      if(interaction.inGuild()) {
+        const guild = client.guilds.cache.get(interaction.guildId);
+        const permissions = guild.members.me.permissions;
+        if(!permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) return interaction.reply({content : `I do not have the \`MANAGE_CHANNELS\` permission . Please grant me the permission before using this command.`, ephemeral:true});
+        if(!permissions.has(Permissions.FLAGS.READ_MESSAGE_HISTORY)) return interaction.reply({content : `I do not have the \`READ_MESSAGE_HISTORY\` permission . Please grant me the permission before using this command.`, ephemeral:true});
+        if(!permissions.has(Permissions.FLAGS.SEND_MESSAGES)) return interaction.reply({content : `I do not have the \`SEND_MESSAGES\` permission . Please grant me the permission before using this command.`, ephemeral:true});
+      };
       await interaction.deferReply({ ephemeral: true });
       const find = await sub_records.findOne({
         discord_id: interaction.user.id,
