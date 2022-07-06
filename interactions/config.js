@@ -21,7 +21,8 @@ module.exports = {
     try {
       if(interaction.inGuild()) {
         const guild = client.guilds.cache.get(interaction.guildId);
-        const permissions = guild.members.me.permissions;
+        const member = await guild.members.fetch(client.user.id);
+        const permissions = member.permissions;
         if(!permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) return interaction.reply({content : `I do not have the \`MANAGE_CHANNELS\` permission . Please grant me the permission before using this command.`, ephemeral:true});
         if(!permissions.has(Permissions.FLAGS.READ_MESSAGE_HISTORY)) return interaction.reply({content : `I do not have the \`READ_MESSAGE_HISTORY\` permission . Please grant me the permission before using this command.`, ephemeral:true});
         if(!permissions.has(Permissions.FLAGS.SEND_MESSAGES)) return interaction.reply({content : `I do not have the \`SEND_MESSAGES\` permission . Please grant me the permission before using this command.`, ephemeral:true});
