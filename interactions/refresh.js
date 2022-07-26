@@ -1,4 +1,4 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, ComponentType } = require("discord.js");
 const row_left = new ActionRowBuilder()
   .addComponents(
     new ButtonBuilder()
@@ -451,7 +451,7 @@ module.exports = {
               }).catch((e) => { });
               let counter = 0;
               const collector = floorMessage.createMessageComponentCollector({
-                componentType: 'Button',
+                componentType: ComponentType.Button,
                 idle: 120000
               });
               collector.on("collect", async (i) => {
@@ -497,7 +497,7 @@ module.exports = {
               }).catch((e) => { });
               let counter = 0;
               const collector = floorMessage.createMessageComponentCollector({
-                componentType: 'Button',
+                componentType: ComponentType.Button,
                 idle: 120000
               });
               collector.on("collect", async (i) => {

@@ -32,7 +32,7 @@ module.exports = {
       let dm = false;
       let sendDm = "";
       if (channel.type === ChannelType.DM) dm = true;
-      if (!dm && !interaction.memberPermissions?.has(PermissionsBitField.Administrator) && !interaction.memberPermissions?.has(PermissionsBitField.ManageGuild) && interaction.user.id !== interaction.guild?.ownerId) return interaction.editReply({
+      if (!dm && !interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator) && !interaction.memberPermissions?.has(PermissionsBitField.Flags.ManageGuild) && interaction.user.id !== interaction.guild?.ownerId) return interaction.editReply({
         content: "This command can only be used by you in a Discord Server where either of the following apply :\n1) You are the Owner of the Discord Server.\n2) You have the **ADMINISTRATOR** permission in the server.\n3) You have the **MANAGE SERVER** permission in the server. Add me to your server by clicking on \"Add to Server\" on my profile or invite me using this [link](https://discord.com/oauth2/authorize?client_id=969112729631735828&scope=bot%20applications.commands&PermissionsBitField=67600) .",
         ephemeral: true,
       });
