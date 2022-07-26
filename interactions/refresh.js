@@ -1,54 +1,47 @@
-const {
-  MessageEmbed,
-  MessageActionRow,
-  MessageButton
-} = require("discord.js");
-const row_left = new MessageActionRow()
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType } = require("discord.js");
+const row_left = new ActionRowBuilder()
   .addComponents(
-    new MessageButton()
+    new ButtonBuilder()
       .setCustomId("left")
       .setLabel("❰")
-      .setStyle("PRIMARY")
+      .setStyle(ButtonStyle.Primary)
       .setDisabled(true),
-    new MessageButton()
+    new ButtonBuilder()
       .setCustomId("right")
       .setLabel("❱")
-      .setStyle("PRIMARY")
+      .setStyle(ButtonStyle.Primary)
   );
-const row_middle = new MessageActionRow()
+const row_middle = new ActionRowBuilder()
   .addComponents(
-    new MessageButton()
+    new ButtonBuilder()
       .setCustomId("left")
       .setLabel("❰")
-      .setStyle("PRIMARY"),
-    new MessageButton()
+      .setStyle(ButtonStyle.Primary),
+    new ButtonBuilder()
       .setCustomId("right")
       .setLabel("❱")
-      .setStyle("PRIMARY")
+      .setStyle(ButtonStyle.Primary)
   );
-const row_right = new MessageActionRow()
+const row_right = new ActionRowBuilder()
   .addComponents(
-    new MessageButton()
+    new ButtonBuilder()
       .setCustomId("left")
       .setLabel("❰")
-      .setStyle("PRIMARY"),
-    new MessageButton()
+      .setStyle(ButtonStyle.Primary),
+    new ButtonBuilder()
       .setCustomId("right")
       .setLabel("❱")
-      .setStyle("PRIMARY")
+      .setStyle(ButtonStyle.Primary)
       .setDisabled(true)
   );
-const row = new MessageActionRow()
+const row = new ActionRowBuilder()
   .addComponents(
-    new MessageButton()
+    new ButtonBuilder()
       .setLabel("REFRESH")
-      .setStyle("SUCCESS")
+      .setStyle(ButtonStyle.Success)
       .setCustomId("refresh")
   );
-const mongoose = require("mongoose");
-const {
-  RateLimiter
-} = require("limiter");
+const { RateLimiter } = require("limiter");
 const config_records = require('../models/configRecords');
 const sub_records = require('../models/subscriptionRecords');
 let etherscan_key = process.env['etherscan_key'];
@@ -80,7 +73,7 @@ const permittedContracts = ["0x6b175474e89094c44da98b954eedeac495271d0f", "0xdac
 ////////////// SYNC FUNCTIONS //////////////
 
 function embedGenerator(title, url, description) {
-  const returnEmbed = new MessageEmbed().setColor("#454be9").setTitle(title).setDescription(description).setFooter({ text: 'Powered by BoBot', iconURL: 'https://media.discordapp.net/attachments/797163839765741568/969482807678234725/unknown-1.png?width=452&height=452' });
+  const returnEmbed = new EmbedBuilder().setColor("#454be9").setTitle(title).setDescription(description).setFooter({ text: 'Powered by BoBot', iconURL: 'https://media.discordapp.net/attachments/797163839765741568/969482807678234725/unknown-1.png?width=452&height=452' });
   if (url) returnEmbed.setURL(url);
   return returnEmbed;
 };
@@ -317,7 +310,7 @@ module.exports = {
       let dm = false;
       let savedDm = false;
       const channel = await client.channels.fetch(interaction.channelId);
-      if (channel.type === "DM" || channel.type === "GROUP_DM") dm = true;
+      if (channel.type === ChannelType.DM) dm = true;
       const find = await config_records.findOne({
         discord_id: interaction.user.id,
       });
@@ -424,12 +417,12 @@ module.exports = {
           } while (!stats || !stats.stats)
           let floor = Number(stats.stats.floor_price);
           if (!floor) floor = 0;
-          if (collections[1] === "cryptopunks") floor = 50;
+          if (collections[1] === "cryptopunks") floor = 80;
           newCollections.push([collection[2], collection[0], floor.toFixed(4), (floor * ether_usd_price).toFixed(2), (floor * collection[2]).toFixed(4)]);
           nft_worth = nft_worth + Number((floor * collection[2]).toFixed(4));
           if (collections.length !== newCollections.length) return;
           const numberOfEmbeds = Math.ceil(newCollections.length / 30);
-          newCollections.sort(function(a, b) {
+          newCollections.sort(function (a, b) {
             return b[2] - a[2]
           });
           const floorEmbeds = switchIt(numberOfEmbeds, newCollections);
@@ -458,7 +451,7 @@ module.exports = {
               }).catch((e) => { });
               let counter = 0;
               const collector = floorMessage.createMessageComponentCollector({
-                componentType: 'BUTTON',
+                componentType: 'Button',
                 idle: 120000
               });
               collector.on("collect", async (i) => {
@@ -504,7 +497,7 @@ module.exports = {
               }).catch((e) => { });
               let counter = 0;
               const collector = floorMessage.createMessageComponentCollector({
-                componentType: 'BUTTON',
+                componentType: 'Button',
                 idle: 120000
               });
               collector.on("collect", async (i) => {

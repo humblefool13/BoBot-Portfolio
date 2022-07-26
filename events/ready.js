@@ -1,4 +1,3 @@
-const Discord = require('discord.js');
 const config_records = require('../models/configRecords');
 const sub_records = require('../models/subscriptionRecords');
 

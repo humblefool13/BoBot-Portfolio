@@ -1,30 +1,24 @@
-const {
-  MessageEmbed,
-  MessageActionRow,
-  MessageButton , 
-  Permissions
-} = require("discord.js");
-const mongoose = require("mongoose");
+const { ActionRowBuilder, ButtonBuilder, PermissionsBitField, ButtonStyle, ChannelType } = require("discord.js");
 const config_records = require('../models/configRecords');
 const sub_records = require('../models/subscriptionRecords');
-const row = new MessageActionRow()
+const row = new ActionRowBuilder()
   .addComponents(
-    new MessageButton()
+    new ButtonBuilder()
       .setLabel("START")
       .setCustomId("refresh")
-      .setStyle("SUCCESS"),
+      .setStyle(ButtonStyle.Success),
   );
 
 module.exports = {
   name: "config",
   async interact(client, interaction) {
     try {
-      if(interaction.inGuild()) {
+      if (interaction.inGuild()) {
         const guild = client.guilds.cache.get(interaction.guildId);
-        const permissions = guild.me.permissions;
-        if(!permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) return interaction.reply({content : `I do not have the \`MANAGE_CHANNELS\` permission . Please grant me the permission before using this command.`, ephemeral:true});
-        if(!permissions.has(Permissions.FLAGS.READ_MESSAGE_HISTORY)) return interaction.reply({content : `I do not have the \`READ_MESSAGE_HISTORY\` permission . Please grant me the permission before using this command.`, ephemeral:true});
-        if(!permissions.has(Permissions.FLAGS.SEND_MESSAGES)) return interaction.reply({content : `I do not have the \`SEND_MESSAGES\` permission . Please grant me the permission before using this command.`, ephemeral:true});
+        const clientPermission = guild.members.me.permissions;
+        if (!clientPermission.has(PermissionsBitField.Flags.ManageChannels)) return interaction.reply({ content: `I do not have the \`MANAGE_CHANNELS\` permission . Please grant me the permission before using this command.`, ephemeral: true });
+        if (!clientPermission.has(PermissionsBitField.Flags.ReadMessageHistory)) return interaction.reply({ content: `I do not have the \`READ_MESSAGE_HISTORY\` permission . Please grant me the permission before using this command.`, ephemeral: true });
+        if (!clientPermission.has(PermissionsBitField.Flags.SendMessages)) return interaction.reply({ content: `I do not have the \`SEND_MESSAGES\` permission . Please grant me the permission before using this command.`, ephemeral: true });
       };
       await interaction.deferReply({ ephemeral: true });
       const find = await sub_records.findOne({
@@ -37,9 +31,9 @@ module.exports = {
       const channel = await client.channels.fetch(interaction.channelId);
       let dm = false;
       let sendDm = "";
-      if (channel.type === "DM" || channel.type === "GROUP_DM") dm = true;
-      if (!dm && !interaction.memberPermissions?.has("ADMINISTRATOR") && !interaction.memberPermissions?.has("MANAGE_GUILD") && interaction.user.id !== interaction.guild?.ownerId) return interaction.editReply({
-        content: "This command can only be used by you in a Discord Server where either of the following apply :\n1) You are the Owner of the Discord Server.\n2) You have the **ADMINISTRATOR** permission in the server.\n3) You have the **MANAGE SERVER** permission in the server. Add me to your server by clicking on \"Add to Server\" on my profile or invite me using this [link](https://discord.com/oauth2/authorize?client_id=969112729631735828&scope=bot%20applications.commands&permissions=67600) .",
+      if (channel.type === ChannelType.DM) dm = true;
+      if (!dm && !interaction.memberPermissions?.has(PermissionsBitField.Administrator) && !interaction.memberPermissions?.has(PermissionsBitField.ManageGuild) && interaction.user.id !== interaction.guild?.ownerId) return interaction.editReply({
+        content: "This command can only be used by you in a Discord Server where either of the following apply :\n1) You are the Owner of the Discord Server.\n2) You have the **ADMINISTRATOR** permission in the server.\n3) You have the **MANAGE SERVER** permission in the server. Add me to your server by clicking on \"Add to Server\" on my profile or invite me using this [link](https://discord.com/oauth2/authorize?client_id=969112729631735828&scope=bot%20applications.commands&PermissionsBitField=67600) .",
         ephemeral: true,
       });
       if (dm) {
@@ -132,19 +126,28 @@ module.exports = {
         });
       };
       if (!dm) {
-        const category = await interaction.guild.channels.create("🤖 BoBot PortFolio 🤖", {
-          type: "GUILD_CATEGORY"
+        const category = await interaction.guild.channels.create({
+          name: "🤖 BoBot PortFolio 🤖",
+          type: ChannelType.GuildCategory
         });
-        const floors_channel = await category.createChannel("📈︱floor-prices", {
+        const floors_channel = await interaction.guild.channels.create({
+          name: "📈︱floor-prices",
+          parent: category,
           topic: "Get real time floor prices of collections owned by just clicking a button . Powered by BoBot : https://discord.gg/HweZtrzAnX ! "
         });
-        const erc20_channel = await category.createChannel("🪙︱erc-20-stats", {
+        const erc20_channel = await interaction.guild.channels.create({
+          name: "🪙︱erc-20-stats",
+          parent: category,
           topic: "Get real time stats of ERC-20 tokens owned by just clicking a button . Powered by BoBot : https://discord.gg/HweZtrzAnX ! "
         });
-        const wallets_channel = await category.createChannel("💵︱wallets-stats", {
+        const wallets_channel = await interaction.guild.channels.create({
+          name: "💵︱wallets-stats",
+          parent: category,
           topic: "Get real time stats of wallets owned by just clicking a button . Powered by BoBot : https://discord.gg/HweZtrzAnX ! "
         });
-        const portfolio_channel = await category.createChannel("💰︱portfolio", {
+        const portfolio_channel = await interaction.guild.channels.create({
+          name: "💰︱portfolio",
+          parent: category,
           topic: "Get real time portfolio by just clicking a button . Powered by BoBot : https://discord.gg/HweZtrzAnX ! "
         });
         const channel_ids = [floors_channel.id, wallets_channel.id, portfolio_channel.id, erc20_channel.id];

@@ -1,9 +1,3 @@
-const {
-  MessageEmbed,
-  MessageActionRow,
-  MessageButton
-} = require("discord.js");
-const mongoose = require("mongoose");
 const free_users = require('../models/freeTrials');
 const sub_records = require('../models/subscriptionRecords');
 
