@@ -1,5 +1,6 @@
 const config_records = require('../models/configRecords');
 const sub_records = require('../models/subscriptionRecords');
+const { ActivityType } = require("discord.js");
 
 async function editEndMsg(config, client) {
   const dm = config.dm;
@@ -58,7 +59,7 @@ module.exports = {
     async function configFilter() {
       const subs = await sub_records.find();
       const subscriberCount = subs.length;
-      client.user.setActivity(`${subscriberCount} Portfolios | ${guildsCount} Servers`, { type: 'WATCHING' });
+      client.user.setActivity(`${subscriberCount} Portfolios | ${guildsCount} Servers`, { type: ActivityType.Watching });
       const subscribers = subs.map(e => e.discord_id);
       handleRoles(subscribers, client);
       subs.forEach(async (sub) => {
