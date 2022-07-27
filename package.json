@@ -11,7 +11,7 @@
     "scrapingbee": "^1.6.1",
     "web3": "^1.7.3"
   },
-  "name": "bobot",
+  "name": "bobot-portfolio",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -27,8 +27,9 @@
     "url": "https://github.com/humblefool13/BoBot/issues"
   },
   "homepage": "https://github.com/humblefool13/BoBot#readme",
-  "description": "",
   "engines": {
     "node": "16"
-  }
+  },
+  "devDependencies": {},
+  "description": ""
 }
