@@ -1,4 +1,4 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder , ChannelType, ButtonStyle, ComponentType } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, ButtonStyle, ComponentType } = require("discord.js");
 
 module.exports = {
   name: "help",
