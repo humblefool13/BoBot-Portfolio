@@ -7,7 +7,7 @@ module.exports = {
   async execute(client, interaction) {
     let Icommand = "";
     try {
-      if (interaction.type === InteractionType.ApplicationCommand) {
+      if (interaction.isChatInputCommand()) {
         Icommand = interaction.commandName;
       } else if (interaction.type === InteractionType.MessageComponent && interaction.customId === "refresh") {
         Icommand = interaction.customId;

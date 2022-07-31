@@ -455,6 +455,12 @@ module.exports = {
                 idle: 120000
               });
               collector.on("collect", async (i) => {
+                if (i.user.id !== interaction.user.id) {
+                  return i.reply({
+                    content: "These buttons aren't for you.",
+                    ephemeral: true,
+                  });
+                };
                 await i.deferUpdate();
                 if (counter === 0 && i.customId === "left") return;
                 if (counter === floorEmbeds.length - 1 && i.customId === "right") return;
@@ -501,6 +507,12 @@ module.exports = {
                 idle: 120000
               });
               collector.on("collect", async (i) => {
+                if (i.user.id !== interaction.user.id) {
+                  return i.reply({
+                    content: "These buttons aren't for you.",
+                    ephemeral: true,
+                  });
+                };
                 await i.deferUpdate();
                 if (counter === 0 && i.customId === "left") return;
                 if (counter === floorEmbeds.length - 1 && i.customId === "right") return;
