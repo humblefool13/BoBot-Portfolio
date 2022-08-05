@@ -55,7 +55,7 @@ module.exports = {
   async execute(client) {
     client.user.setStatus('online');
     const guildsCount = client.guilds.cache.size;
-    console.log("!!!!! BOBOT MAIN IS ON !!!!!");
+    console.log(`!!!!! ${client.user.id} IS ON !!!!!`);
     async function configFilter() {
       const subs = await sub_records.find();
       const subscriberCount = subs.length;

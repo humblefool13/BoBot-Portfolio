@@ -450,7 +450,9 @@ module.exports = {
                 components: [row_left],
               }).catch((e) => { });
               let counter = 0;
+              const filter = int => int.user.id === interaction.user.id;
               const collector = floorMessage.createMessageComponentCollector({
+                filter,
                 componentType: ComponentType.Button,
                 idle: 120000
               });
@@ -502,7 +504,9 @@ module.exports = {
                 components: [row_left],
               }).catch((e) => { });
               let counter = 0;
+              const filter = int => int.user.id === interaction.user.id;
               const collector = floorMessage.createMessageComponentCollector({
+                filter,
                 componentType: ComponentType.Button,
                 idle: 120000
               });

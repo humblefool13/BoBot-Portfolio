@@ -86,7 +86,9 @@ module.exports = {
         components: [row_left],
         fetchReply: true,
       });
+      const filter = int => int.user.id === interaction.user.id;
       const collector = sent.createMessageComponentCollector({
+        filter,
         componentType: ComponentType.Button,
         idle: 90000
       });
