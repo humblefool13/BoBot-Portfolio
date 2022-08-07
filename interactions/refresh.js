@@ -73,7 +73,7 @@ const permittedContracts = ["0x6b175474e89094c44da98b954eedeac495271d0f", "0xdac
 ////////////// SYNC FUNCTIONS //////////////
 
 function embedGenerator(title, url, description) {
-  const returnEmbed = new EmbedBuilder().setColor("#35FF6E").setTitle(title).setDescription(description).setFooter({ text: 'Powered by BoBot', iconURL: 'https://media.discordapp.net/attachments/797163839765741568/969482807678234725/unknown-1.png?width=452&height=452' });
+  const returnEmbed = new EmbedBuilder().setColor("#35FF6E").setTitle(title).setDescription(description).setFooter({ text: "Powered by bobotlabs.xyz", iconURL: "https://cdn.discordapp.com/attachments/1003741555993100378/1003742971000266752/gif.gif" });
   if (url) returnEmbed.setURL(url);
   return returnEmbed;
 };
@@ -357,7 +357,7 @@ module.exports = {
         };
       };
       await interaction.followUp({
-        content: "Please do not spam the command and allow the application to update everything . Usually this is quick , but somestimes it may take few mins depending on traffic !\nThank you.",
+        embeds: [embedGenerator("Command successful!",null,"Please do not spam the command and allow the application to update everything. Usually this is quick, but somestimes it may take few mins depending on traffic!\nThank you.")],
         ephemeral: true,
       }).catch((e) => { });
 
