@@ -57,7 +57,6 @@ module.exports = {
 
     ///////////////////////////////////////////////
 
-
     async function configFilter() {
       const subs = await sub_records.find();
       client.user.setActivity(`Your Net Worth!`, { type: ActivityType.Watching });
