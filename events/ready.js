@@ -53,13 +53,14 @@ module.exports = {
   name: 'ready',
   once: true,
   async execute(client) {
-    client.user.setStatus('online');
-    const guildsCount = client.guilds.cache.size;
-    console.log(`!!!!! ${client.user.id} IS ON !!!!!`);
+    console.log(`!!!!! ${client.user.tag} IS ON !!!!!`);
+
+    ///////////////////////////////////////////////
+
+
     async function configFilter() {
       const subs = await sub_records.find();
-      const subscriberCount = subs.length;
-      client.user.setActivity(`${subscriberCount} Portfolios | ${guildsCount} Servers`, { type: ActivityType.Watching });
+      client.user.setActivity(`Your Net Worth!`, { type: ActivityType.Watching });
       const subscribers = subs.map(e => e.discord_id);
       handleRoles(subscribers, client);
       subs.forEach(async (sub) => {
