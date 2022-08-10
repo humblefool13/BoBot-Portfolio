@@ -54,12 +54,12 @@ module.exports = {
   once: true,
   async execute(client) {
     console.log(`!!!!! ${client.user.tag} IS ON !!!!!`);
+    client.user.setActivity(`Your Net Worth!`, { type: ActivityType.Watching });
 
     ///////////////////////////////////////////////
 
     async function configFilter() {
       const subs = await sub_records.find();
-      client.user.setActivity(`Your Net Worth!`, { type: ActivityType.Watching });
       const subscribers = subs.map(e => e.discord_id);
       handleRoles(subscribers, client);
       subs.forEach(async (sub) => {

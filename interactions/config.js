@@ -39,7 +39,7 @@ module.exports = {
       let sendDm = "";
       if (channel.type === ChannelType.DM) dm = true;
       if (!dm && !interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator) && !interaction.memberPermissions?.has(PermissionsBitField.Flags.ManageGuild) && interaction.user.id !== interaction.guild?.ownerId) return interaction.editReply({
-        embeds: [MakeEmbed("This command can only be used by you in a Discord Server where either of the following apply :\n1) You are the Owner of the Discord Server.\n2) You have the **ADMINISTRATOR** permission in the server.\n3) You have the **MANAGE SERVER** permission in the server. Add me to your server by clicking on \"Add to Server\" on my profile or invite me using this [link](https://discord.com/oauth2/authorize?client_id=969112729631735828&scope=bot%20applications.commands&PermissionsBitField=67600).")],
+        embeds: [MakeEmbed("This command can only be used by you in a Discord Server where either of the following apply:\n1) You are the Owner of the Discord Server.\n2) You have the **ADMINISTRATOR** permission in the server.\n3) You have the **MANAGE SERVER** permission in the server. Add me to your server by clicking on \"Add to Server\" on my profile.")],
         ephemeral: true,
       });
       if (dm) {
@@ -139,22 +139,22 @@ module.exports = {
         const floors_channel = await interaction.guild.channels.create({
           name: "📈︱floor-prices",
           parent: category,
-          topic: "Get real time floor prices of collections owned by just clicking a button . Powered by BoBot : https://discord.gg/HweZtrzAnX ! "
+          topic: "Get real time floor prices of collections owned by just clicking a button. Powered by BoBot : https://discord.gg/HweZtrzAnX !"
         });
         const erc20_channel = await interaction.guild.channels.create({
           name: "🪙︱erc-20-stats",
           parent: category,
-          topic: "Get real time stats of ERC-20 tokens owned by just clicking a button . Powered by BoBot : https://discord.gg/HweZtrzAnX ! "
+          topic: "Get real time stats of ERC-20 tokens owned by just clicking a button. Powered by BoBot : https://discord.gg/HweZtrzAnX !"
         });
         const wallets_channel = await interaction.guild.channels.create({
           name: "💵︱wallets-stats",
           parent: category,
-          topic: "Get real time stats of wallets owned by just clicking a button . Powered by BoBot : https://discord.gg/HweZtrzAnX ! "
+          topic: "Get real time stats of wallets owned by just clicking a button. Powered by BoBot : https://discord.gg/HweZtrzAnX !"
         });
         const portfolio_channel = await interaction.guild.channels.create({
           name: "💰︱portfolio",
           parent: category,
-          topic: "Get real time portfolio by just clicking a button . Powered by BoBot : https://discord.gg/HweZtrzAnX ! "
+          topic: "Get real time portfolio by just clicking a button. Powered by BoBot : https://discord.gg/HweZtrzAnX !"
         });
         const channel_ids = [floors_channel.id, wallets_channel.id, portfolio_channel.id, erc20_channel.id];
         const floor_msg = await floors_channel.send({
@@ -187,7 +187,7 @@ module.exports = {
           console.log(e)
         });
         return interaction.editReply({
-          embeds: [MakeEmbed(`Your BoBot kit is setup at the category named \"BOBOT PORTFOLIO\" with channels <#${channel_ids.join("> , <#")}>. \nClicking any of the buttons in any channel will refresh all stats i.e. clicking the refresh button at floor channel will refresh all - floors, wallets, erc-20s, portfolio .....\n\nHope you can track your gains/losses better now!!!\nGoodluck on this journey! :slight_smile:`)],
+          embeds: [MakeEmbed(`Your BoBot kit is setup at the category named \"BOBOT PORTFOLIO\" with channels <#${channel_ids.join("> , <#")}>.\nClicking any of the buttons in any channel will refresh all stats i.e. clicking the refresh button at floor channel will refresh all - floors, wallets, erc-20s, portfolio .....\n\nHope you can track your gains/losses better now!!!\nGoodluck on this journey! :slight_smile:`)],
           ephemeral: true,
         });
       } else {
