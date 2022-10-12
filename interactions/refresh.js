@@ -260,12 +260,13 @@ async function getCollections(wallet) {
     collections_owned = await getUrlOSAPI(collections_url);
   } while (!Array.isArray(collections_owned))
   collections_owned.forEach((collection) => {
+    const hidden = collection.hidden;
     const find = collectionsxd.find((e) => {
       e[0] === collection.name
     });
-    if (!find) {
+    if (!find && !hidden) {
       collectionsxd.push([collection.name, collection.slug, Number(collection.owned_asset_count)]);
-    } else {
+    } else if (find && !hidden) {
       const ownedOld1 = collectionsxd[collectionsxd.indexOf(find)];
       const ownedOld2 = ownedOld1[2];
       collectionsxd[collectionsxd.indexOf(find)] = [collection.name, collection.slug, ownedOld2 + Number(collection.owned_asset_count)];
@@ -357,7 +358,7 @@ module.exports = {
         };
       };
       await interaction.followUp({
-        embeds: [embedGenerator("Command successful!",null,"Please do not spam the command and allow the application to update everything. Usually this is quick, but somestimes it may take few mins depending on traffic!\nThank you.")],
+        embeds: [embedGenerator("Command successful!", null, "Please do not spam the command and allow the application to update everything. Usually this is quick, but somestimes it may take few mins depending on traffic!\nThank you.")],
         ephemeral: true,
       }).catch((e) => { });
 
